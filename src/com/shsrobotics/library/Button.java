@@ -35,4 +35,28 @@ public abstract class Button {
 		
 		return false;
 	}
+	
+	/**
+	 * Start a task when pressed.
+	 * @param task the task to start.
+	 */
+	public void whenPressed(Task task) {
+		if (pressed()) {
+			task.start();
+		}
+	}
+	
+	/**
+	 * Start a task when pressed, stop it when released.
+	 * @param task the task to start.
+	 */
+	public void whileHeld(Task task) {
+		if (pressed()) {
+			task.start();
+		}
+		if (!held()) {
+			task.end();
+			task.stop();
+		}
+	}
 }
