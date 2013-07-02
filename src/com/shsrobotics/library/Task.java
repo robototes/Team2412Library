@@ -56,6 +56,10 @@ public abstract class Task {
 		timeout = GLOBAL.getMicrosecondsFromMilliseconds(milliseconds);
 	}
 	
+	/**
+	 * Checks to see if the task has timed out.
+	 * @return {@code true} if timed out.
+	 */
 	private boolean isTimedOut() {
 		if (timeout == -1) {
 			return false;
