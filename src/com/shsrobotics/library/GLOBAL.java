@@ -1,6 +1,7 @@
 package com.shsrobotics.library;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DriverStationLCD;
 import edu.wpi.first.wpilibj.Relay;
 
 /**
@@ -94,4 +95,25 @@ public interface GLOBAL {
 	public static final DoubleSolenoid.Value
 		EXTENDED = DoubleSolenoid.Value.kForward,
 		RETRACTED = DoubleSolenoid.Value.kReverse;
+	
+	public static DriverStationLCD screen = DriverStationLCD.getInstance();
+	
+	/**  Shorthand variables for lines and columns of Driver Station Screen. */
+	public class Screen {
+		/**	 Driver Station screen lines.	*/
+		public static final DriverStationLCD.Line
+			line1 = DriverStationLCD.Line.kUser1,
+			line2 = DriverStationLCD.Line.kUser2,
+			line3 = DriverStationLCD.Line.kUser3,
+			line4 = DriverStationLCD.Line.kUser4,
+			line5 = DriverStationLCD.Line.kUser5,
+			line6 = DriverStationLCD.Line.kUser6;
+
+		/**	 Driver Station tabs.	*/
+		public static final int
+			tab1 = 1,
+			tab2 = 5,
+			tab3 = 9,
+			tab4 = 13;
+	}
 }
