@@ -1,10 +1,12 @@
 package com.shsrobotics.library;
 
+import edu.wpi.first.wpilibj.Relay;
+
 /**
  * General useful constants.
  * @author Team 2412 <first.robototes.com, github.com/robototes>
  */
-public class GLOBAL {
+public interface GLOBAL {
 	/** USB port 1.		*/
 	public static final int USB_1 = 1;
 	
@@ -20,18 +22,12 @@ public class GLOBAL {
 	/** For robots with no gyroscope. */
 	public static final double noGyroscopeAngle = 0.0;
 	
-	/** Converts seconds to milliseconds */
-	public static int getMillesecondsFromSeconds(double seconds) {
-		return (int) (seconds * 1000);
-	}
-	
-	/** Converts seconds to milliseconds */
-	public static int getMicrosecondsFromSeconds(double seconds) {
-		return (int) (seconds * 1000000);
-	}
-	
-	/** Converts seconds to milliseconds */
-	public static int getMicrosecondsFromMilliseconds(double seconds) {
-		return (int) (seconds * 1000);
-	} 
+	//universal constants
+	public static final Relay.Value 
+		ON = Relay.Value.kForward, 
+		OFF = Relay.Value.kOff, 
+		OPEN = Relay.Value.kForward,
+		CLOSED = Relay.Value.kOff,
+		FORWARD = Relay.Value.kForward,
+		REVERSE = Relay.Value.kReverse;
 }

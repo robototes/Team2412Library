@@ -53,7 +53,7 @@ public abstract class Task {
 	 * @param milliseconds the number of milliseconds to run the task for.
 	 */
 	protected void setTimeout(int milliseconds) {
-		timeout = GLOBAL.getMicrosecondsFromMilliseconds(milliseconds);
+		timeout = milliseconds * 1000; // in microseconds
 	}
 	
 	/**
