@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
  * Improved IterativeRobot.
  * @author Team 2412 <first.robototes.com, github.com/robototes>
  */
-public class FRCRobot extends IterativeRobot{
+public class FRCRobot extends IterativeRobot {
 	private boolean firstRun;
 	private boolean startup;
 	
