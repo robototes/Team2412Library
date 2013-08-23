@@ -15,10 +15,12 @@ public class FRCRobot extends IterativeRobot {
 	private boolean firstRun;
 	private boolean startup;
 	
+	@Override
 	public void robotInit() {
 		DriverStation ds = DriverStation.getInstance();
 		Alliance alliance = ds.getAlliance();
 		int location = ds.getLocation();
+		double voltage = ds.getBatteryVoltage();
 		
 		System.out.println("	==== STARTING INITIALIZATION PROCEDURES ====");
 			Timer.delay(0.15);
@@ -26,12 +28,19 @@ public class FRCRobot extends IterativeRobot {
 			Timer.delay(0.2);
 		System.out.println("		RUNNING SYSTEM CHECKS");
 			Timer.delay(0.1);
-		System.out.println("			VOLTAGE: " + ds.getBatteryVoltage());
+		System.out.println("			VOLTAGE: " + voltage);
 			Timer.delay(0.05);
 		if (ds.isFMSAttached()) {
 			System.out.println("			FMS ATTAHCED");
 			Timer.delay(0.2);
 		}
+		
+		if (voltage < 12.0) {
+			System.out.println();
+			System.out.println("!!-- WARNING: LOW VOLTAGE --!!");
+			System.out.println();
+		}
+		
 		System.out.println();
 		System.out.println("	=======================");
 		System.out.println("	==== ROBOT IS READY ===");
@@ -40,11 +49,13 @@ public class FRCRobot extends IterativeRobot {
 		startup = true;
 	}
 	
+	@Override
 	public void autonomousInit() {
 		System.out.println("	==== STARTING AUTONOMOUS MODE ====");
 		firstRun = true;
 	}
 	
+	@Override
 	public void autonomousPeriodic() {
 		if (firstRun) {
 			System.out.println("		No autonomous code.");
@@ -54,11 +65,13 @@ public class FRCRobot extends IterativeRobot {
 		Timer.delay(0.05);
 	}
 	
+	@Override
 	public void teleopInit() {
 		System.out.println("	==== STARTING TELE-OPERATED MODE ====");
 		firstRun = true;
 	}
 	
+	@Override
 	public void teleopPeriodic() {
 		if (firstRun) {
 			System.out.println("		No tele-operated code.");
@@ -67,15 +80,18 @@ public class FRCRobot extends IterativeRobot {
 		Timer.delay(0.05);
 	}
 	
+	@Override
 	public void testInit() {
 		System.out.println("	==== TEST MODE STARTING ====");
 	}
 	
+	@Override
 	public void testPeriodic() {
 		LiveWindow.run();
 		Timer.delay(0.005);
 	}
 	
+	@Override
 	public void disabledInit() {
 		if (!startup) {
 			System.out.println("	==== ROBOT DISABLED ====");

@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.Relay;
  */
 public interface GLOBAL {
 	/** For robots with no gyroscope. */
-	public static final double noGyroscopeAngle = 0.0;
+	public static final double noGyroscope = 0.0;
 	
 	/**	 USB ports.	 */
 	public static final int 
