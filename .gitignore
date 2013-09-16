@@ -1,5 +1,5 @@
-build\
-nbproject\private\private.xml
-nbproject\project.xml
-.class
-dist\javadoc
+build/
+nbproject/private/private.xml
+nbproject/project.xml
+*.class
+dist/javadoc/
