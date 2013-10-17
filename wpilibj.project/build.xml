@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project basedir="." name="WPILibJ" default="dist">
 	
-    <property name="wpilibj.jar.out" value="dist/lib/wpilibj.jar"/>
+    <property name="wpilibj.jar.out" value="${user.home}/sunspotfrcsdk/lib/wpilibj.jar"/>
     <property name="app.jar.file" location="${wpilibj.jar.out}"/>
     <property name="app.project.zip.file" location="dist/lib/wpilibj.project.zip"/>
     <property name="app.src.zip.file" location="dist/lib/wpilibj.src.zip"/>
