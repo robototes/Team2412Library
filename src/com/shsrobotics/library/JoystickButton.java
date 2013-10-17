@@ -16,7 +16,6 @@ public class JoystickButton extends Button {
 		this.button = button;
 	}
 	
-	@Override
 	public boolean get() {
 		return joystick.getRawButton(button);
 	}
