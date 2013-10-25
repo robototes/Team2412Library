@@ -83,10 +83,14 @@ public class MathStackAction implements Action {
      * @return The value resulting from evaluating the MathStack.
      */
     public static Object evaluate() {
+        eval();
+        return varStack.peek();
+    }
+    
+    public static void eval() {
         while ( !opStack.empty() ) {
             ((Op)opStack.pop()).execute();
         }
-        return varStack.pop();
     }
     
     public abstract static class Op {
@@ -250,7 +254,7 @@ public class MathStackAction implements Action {
                         res = new Float( ((Float)v2).floatValue() % ((Integer)v1).intValue() );
                     }
                     else {
-                        res = new Float( ((Integer)v2).floatValue() % ((Integer)v1).intValue() );
+                        res = new Integer( ((Integer)v2).intValue() % ((Integer)v1).intValue() );
                     }
                 }
                 
