@@ -4,6 +4,9 @@
  */
 package com.shsrobotics.library.scrpitedrobot;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -15,6 +18,16 @@ import java.util.Vector;
 public class VirtualRobot implements RobotConstants {
     protected static final Vector SENSOR_ARRAY = new Vector();
     protected static final Hashtable VARIABLE_ARRAY = new Hashtable();
+    
+    static {
+        try {
+            ScriptReader.setInputStream(new FileInputStream(SCRIPT_PATH));
+        }
+        catch (FileNotFoundException fnfe) {
+            VirtualRobot.throwError(SCRIPT_PATH + " does not exist; Consider checking where %appdata% actually leads to.");
+            throw new Error(SCRIPT_PATH + " does not exist; Consider checking where %appdata% actually leads to.", fnfe);
+        }
+    }
     
     private VirtualRobot() {
     }

@@ -9,7 +9,7 @@ package com.shsrobotics.library.scrpitedrobot.actions;
  * @author Max
  */
 public class MathStackTest {
-    public static void main(String[] args) {
+    public static void _main(String[] args) {
         /*
          *  Math being evaluated:
          *  (1 + 3) / 3 % 4

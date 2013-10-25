@@ -5,8 +5,10 @@ import static com.shsrobotics.library.scrpitedrobot.ScriptReader.*;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
-import sun.util.BuddhistCalendar;
+import static com.shsrobotics.library.scrpitedrobot.ScriptReader.*;
+import com.sun.squawk.util.StringTokenizer;
 
 /**
  *
@@ -14,22 +16,49 @@ import sun.util.BuddhistCalendar;
  */
 public class ScriptReader {
     
+    private static InputStream is;
+    
+    public static void setInputStream(InputStream instream) {
+        if ( instream != null )
+            is = instream;
+    }
+    
+    private static void throwCompileError(String msg, int line) {
+        
+    }
+    
     private static void readResources(String path) throws FileNotFoundException {
-        File file = new File(path+".res");
-        InputStreamReader isr = new InputStreamReader(file.getInputStream());
-        java.io.BufferedReader br = new BufferedReader(isr);
-        int c;
+        InputStreamReader isr;
+        if ( is == null ) {
+            File file = new File(path+".res");
+            isr = new InputStreamReader(file.getInputStream());
+        }
+        else
+            isr = new InputStreamReader(is);
+        
+        BufferedReader br = new BufferedReader(isr);
         try {
             String line;
+            int lineNum = 0;
             while ( ((line = br.readLine()) != null )) { // c != EOF or end of transmission
+                lineNum++;
                 if ( line.charAt(0) == '#' ) {
                     String rtype = line.substring(1);
-                    
+                    rtype = rtype.trim();
+                    StringTokenizer st = new StringTokenizer(rtype, " ");
+                    if ( st.countTokens() != 2 )
+                        throwCompileError("Too many tokens in hardware definition.", lineNum);
+                    else {
+                        
+                    }
                 }
+            }
+            if ( lineNum == 0 ) {
+                throwCompileError("No hardware defintions.", 0);
             }
         }
         catch (IOException ioe) {
-            
+            throw new Error(ioe);
         }
     }
     

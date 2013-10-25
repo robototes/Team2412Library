@@ -9,7 +9,7 @@ To define a piece of hardware:
     Each line with a definition starts with a pound.
 Type name
     After the # is the type of some hardware.
-    For example, RELAY, VICTOR, SOLENOID. A full list of hardware is in a table somewhere. Find it later.
+    For example, RELAY, VICTOR, SOLENOID, INT, FLOAT. A full list of hardware is in a table somewhere. Find it later.
 Programmer name
     The name this piece of hardware will be called in your script.
 
