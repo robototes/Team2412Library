@@ -1,0 +1,42 @@
+1. Resource File
+2. Script File
+
+
+1. The Resource File
+Every robot uses hardware; This file defines what hardware the robot uses.  It also tells the VirtualRobot what pieces of hardware to initialize.
+To define a piece of hardware:
+#
+    Each line with a definition starts with a pound.
+Type name
+    After the # is the type of some hardware.
+    For example, RELAY, VICTOR, SOLENOID. A full list of hardware is in a table somewhere. Find it later.
+Programmer name
+    The name this piece of hardware will be called in your script.
+
+Example:
+#RELAY pusherRelay
+defines a relay with name pusherRelay
+
+2. The Script File
+This is the script that the robot uses to tell it what to do. It can tell it to get input from the joysticks or to send a message to the dashboard.
+This script has NO SCOPE.  
+Variables are declared on the fly by a "#new type name", ex.
+    #new FLOAT myFloat
+defines a variable of type float called myFloat.
+Valid types are FLOAT, STRING?, INT, BOOLEAN.
+Variables are reset every pass through the script.
+If you need more complex logic not possible in this script then you can create classes for each instance of logic and call
+    NATIVE com.package.name.ClassName
+where com.package.name is the package the class is contained in in the NetBeans project, and ClassName is the name of the class. See text file titled "Importing java into your FRCBasic script".
+
+commands
+    NATIVE
+    PRINT STRING
+    GOTO
+    IF / ELSE
+    
+    1*(4+2)*(4-5%6)
+    
+    
+
+
