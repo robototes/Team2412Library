@@ -22,7 +22,7 @@ public class MathStackTest {
         
         /*
          * Math evaluated:
-         * 36 % 3 * 5
+         * 4 % 3 * 5
          */
         MathStackAction.start(new Integer(36));
         MathStackAction.push(new Integer(3), MathStackAction.Op.MOD);
@@ -31,14 +31,12 @@ public class MathStackTest {
         System.out.println(res.intValue());
         
         /*
-         * 3 / 5 - 7 =>  eval(3/5)-7
+         * 3 / 5 - 7 =>  0 - 7 + 3/5?
          */
         
-        MathStackAction.start(new Float(3));
+        MathStackAction.start(new Integer(7));
+        MathStackAction.push(new Float(3), MathStackAction.Op.SUB);
         MathStackAction.push(new Integer(5), MathStackAction.Op.DIV);
-        MathStackAction.eval();
-        MathStackAction.push(new Integer(7), MathStackAction.Op.SUB);
         System.out.println(((Float)MathStackAction.evaluate()).floatValue());
-        
     }
 }

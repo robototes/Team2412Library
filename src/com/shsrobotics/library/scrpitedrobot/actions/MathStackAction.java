@@ -195,14 +195,14 @@ public class MathStackAction implements Action {
         };
         
         /**
-         * Subtracts the first value popped from the second value popped,
-         * or subtracts the second value pushed from the first value pushed,
+         * Subtracts the second value popped from the first value popped,
+         * or subtracts the first value pushed from the second value pushed,
          * and pushes the result.
          */
         public final static Op SUB = new Op() {
             void execute() {
-                Object v1 = varStack.pop();
                 Object v2 = varStack.pop();
+                Object v1 = varStack.pop();
                 Object res = null;
                 
                 if ( v1 instanceof Float ) {
