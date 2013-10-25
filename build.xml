@@ -3,7 +3,7 @@
     <description>Builds, tests, and runs the project Team2412Library.</description>
     <import file="nbproject/build-impl.xml"/>
 	<target depends="-javadoc-build" description="Bundle javadoc into a jar" name="package-doc">
-		<jar basedir="dist/javadoc" destfile="dist/${ant.project.name}-javadoc.jar"/>
+		<jar basedir="dist/javadoc" destfile="${user.home}/sunspotfrcsdk/lib/Team2412Library-javadoc.jar"/>
 	</target>
 	<target name="-post-jar" depends="package-doc" />
 </project>
