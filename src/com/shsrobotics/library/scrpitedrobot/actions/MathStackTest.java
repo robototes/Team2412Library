@@ -4,12 +4,14 @@
  */
 package com.shsrobotics.library.scrpitedrobot.actions;
 
+import com.shsrobotics.library.scrpitedrobot.UntypedNumber;
+
 /**
  *
  * @author Max
  */
 public class MathStackTest {
-    public static void _main(String[] args) {
+    public static void main(String[] args) {
         /*
          *  Math being evaluated:
          *  (1 + 3) / 3 % 4
@@ -38,5 +40,10 @@ public class MathStackTest {
         MathStackAction.push(new Float(3), MathStackAction.Op.SUB);
         MathStackAction.push(new Integer(5), MathStackAction.Op.DIV);
         System.out.println(((Float)MathStackAction.evaluate()).floatValue());
+        
+        MathStackAction.start(new UntypedNumber(7));
+        MathStackAction.push(new UntypedNumber(8), MathStackAction.Op.SUB);
+        System.out.println(((Number)MathStackAction.evaluate().intValue()));
+        
     }
 }

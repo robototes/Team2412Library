@@ -11,7 +11,7 @@ import java.io.FileInputStream;
  * @author Max
  */
 public class ScriptReaderTest {
-    public static void main(String[] args) throws Exception {
+    public static void _main(String[] args) throws Exception {
         ScriptReader.setInputStream(new FileInputStream(RobotConstants.SCRIPT_PATH + "\\robot.res"));
         ScriptReader.test();
     }

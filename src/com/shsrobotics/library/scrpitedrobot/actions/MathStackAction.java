@@ -61,7 +61,7 @@ public class MathStackAction implements Action {
     public static void start(Object firstNumber) {
         varStack.clear();
         opStack.clear();
-        if ( !(firstNumber instanceof Float || firstNumber instanceof Integer ))
+        if ( !(firstNumber instanceof Number) )
             throw new Error("Invalid data type was put in to a MathStackAction:" + firstNumber.getClass().getCanonicalName());
         varStack.push(firstNumber);
     }
@@ -72,7 +72,7 @@ public class MathStackAction implements Action {
      * @param op The operation pushed onto the stack.
      */
     public static void push(Object value, MathStackAction.Op op) {
-        if ( !(value instanceof Float || value instanceof Integer ))
+        if ( !(value instanceof Number) )
             throw new Error("Invalid data type was put in to a MathStackAction:" + value.getClass().getCanonicalName());
         varStack.push(value);
         opStack.push(op);
@@ -82,9 +82,9 @@ public class MathStackAction implements Action {
      * Evaluates the MathStack and returns the final value.
      * @return The value resulting from evaluating the MathStack.
      */
-    public static Object evaluate() {
+    public static Number evaluate() {
         eval();
-        return varStack.peek();
+        return (Number)varStack.peek();
     }
     
     public static void eval() {
@@ -105,24 +105,24 @@ public class MathStackAction implements Action {
          */
         public final static Op MULT = new Op() {
             void execute() {
-                Object v1 = varStack.pop();
-                Object v2 = varStack.pop();
+                Number v1 = (Number)varStack.pop();
+                Number v2 = (Number)varStack.pop();
                 Object res = null;
                 
-                if ( v1 instanceof Float ) {
-                    if ( v2 instanceof Float ) {
-                        res = new Float( ((Float)v1).floatValue() * ((Float)v2).floatValue() );
+                if ( !(v1 instanceof Integer) ) {
+                    if ( !(v2 instanceof Integer) ) {
+                        res = new Float( v1.floatValue() * v2.floatValue() );
                     }
                     else {
-                        res = new Float( ((Float)v1).floatValue() * ((Integer)v2).intValue() );
+                        res = new Float( v1.floatValue() * v2.intValue() );
                     }
                 }
-                else if ( v1 instanceof Integer ) {
-                    if ( v2 instanceof Float ) {
-                        res = new Float( ((Float)v2).floatValue() * ((Integer)v1).intValue() );
+                else if ( !(v1 instanceof Float) ) {
+                    if ( !(v2 instanceof Integer) ) {
+                        res = new Float( v2.floatValue() * v1.intValue() );
                     }
                     else {
-                        res = new Integer( ((Integer)v1).intValue() * ((Integer)v2).intValue() );
+                        res = new Integer( v1.intValue() * v2.intValue() );
                     }
                 }
                 varStack.push(res);
@@ -136,26 +136,26 @@ public class MathStackAction implements Action {
          */
         public final static Op DIV = new Op() {
             void execute() {
-                Object vd = varStack.pop();
-                Object vn = varStack.pop();
-                Object res = null;
+                Number vd = (Number)varStack.pop();
+                Number vn = (Number)varStack.pop();
+                Number res = null;
                 
-                if ( vd instanceof Float ) {
-                    if ( ((Float)vd).floatValue() == 0 ) VirtualRobot.throwError("Divide by Zero");
-                    else if ( vn instanceof Float ) {
-                        res = new Float( ((Float)vn).floatValue() / ((Float)vd).floatValue() );
+                if ( !(vd instanceof Integer) ) {
+                    if ( vd.floatValue() == 0 ) VirtualRobot.throwError("Divide by Zero");
+                    else if ( !(vn instanceof Integer) ) {
+                        res = new Float( vn.floatValue() / vd.floatValue() );
                     }
                     else {
-                        res = new Float( ((Integer)vn).intValue() / ((Float)vd).floatValue() );
+                        res = new Float( vn.intValue() / vd.floatValue() );
                     }
                 }
-                else if ( vd instanceof Integer ) {
-                    if ( ((Integer)vd).intValue() == 0 ) VirtualRobot.throwError("Divide by Zero");
-                    else if ( vn instanceof Float ) {
-                        res = new Float( ((Float)vn).floatValue() / ((Integer)vd).intValue() );
+                else if ( !(vd instanceof Float) ) {
+                    if ( vd.intValue() == 0 ) VirtualRobot.throwError("Divide by Zero");
+                    else if ( !(vn instanceof Integer) ) {
+                        res = new Float( vn.floatValue() / vd.intValue() );
                     }
                     else {
-                        res = new Integer( ((Integer)vn).intValue() / ((Integer)vd).intValue() );
+                        res = new Integer( vn.intValue() / vd.intValue() );
                     }
                 }
                 
@@ -169,24 +169,24 @@ public class MathStackAction implements Action {
          */
         public final static Op ADD = new Op() {
             void execute() {
-                Object v1 = varStack.pop();
-                Object v2 = varStack.pop();
-                Object res = null;
+                Number v1 = (Number)varStack.pop();
+                Number v2 = (Number)varStack.pop();
+                Number res = null;
                 
-                if ( v1 instanceof Float ) {
-                    if ( v2 instanceof Float ) {
-                        res = new Float( ((Float)v2).floatValue() + ((Float)v1).floatValue() );
+                if ( !(v1 instanceof Integer) ) {
+                    if ( !(v2 instanceof Integer) ) {
+                        res = new Float( v2.floatValue() + v1.floatValue() );
                     }
                     else {
-                        res = new Float( ((Integer)v2).intValue() + ((Float)v1).floatValue() );
+                        res = new Float( v2.intValue() + v1.floatValue() );
                     }
                 }
-                else if ( v1 instanceof Integer ) {
-                    if ( v2 instanceof Float ) {
-                        res = new Float( ((Float)v2).floatValue() + ((Integer)v1).intValue() );
+                else if ( !(v1 instanceof Float) ) {
+                    if ( !(v2 instanceof Integer) ) {
+                        res = new Float( v2.floatValue() + v1.intValue() );
                     }
                     else {
-                        res = new Integer( ((Integer)v2).intValue() + ((Integer)v1).intValue() );
+                        res = new Integer( v2.intValue() + v1.intValue() );
                     }
                 }
                 
@@ -201,24 +201,24 @@ public class MathStackAction implements Action {
          */
         public final static Op SUB = new Op() {
             void execute() {
-                Object v2 = varStack.pop();
-                Object v1 = varStack.pop();
-                Object res = null;
+                Number v2 = (Number)varStack.pop();
+                Number v1 = (Number)varStack.pop();
+                Number res = null;
                 
-                if ( v1 instanceof Float ) {
-                    if ( v2 instanceof Float ) {
-                        res = new Float( ((Float)v2).floatValue() - ((Float)v1).floatValue() );
+                if ( !(v1 instanceof Integer) ) {
+                    if ( !(v2 instanceof Integer) ) {
+                        res = new Float( v2.floatValue() - v1.floatValue() );
                     }
                     else {
-                        res = new Float( ((Integer)v2).intValue() - ((Float)v1).floatValue() );
+                        res = new Float( v2.intValue() - v1.floatValue() );
                     }
                 }
-                else if ( v1 instanceof Integer ) {
-                    if ( v2 instanceof Float ) {
-                        res = new Float( ((Float)v2).floatValue() - ((Integer)v1).intValue() );
+                else if ( !(v1 instanceof Float) ) {
+                    if ( !(v2 instanceof Integer) ) {
+                        res = new Float( v2.floatValue() - v1.intValue() );
                     }
                     else {
-                        res = new Float( ((Integer)v2).floatValue() - ((Integer)v1).intValue() );
+                        res = new Float( v2.floatValue() - v1.intValue() );
                     }
                 }
                 
@@ -237,24 +237,24 @@ public class MathStackAction implements Action {
          */
         public final static Op MOD = new Op() {
              void execute() {
-                Object v1 = varStack.pop();
-                Object v2 = varStack.pop();
-                Object res = null;
+                Number v1 = (Number)varStack.pop();
+                Number v2 = (Number)varStack.pop();
+                Number res = null;
                 
-                if ( v1 instanceof Float ) {
-                    if ( v2 instanceof Float ) {
-                        res = new Float( ((Float)v2).floatValue() % ((Float)v1).floatValue() );
+                if ( !(v1 instanceof Integer) ) {
+                    if ( !(v2 instanceof Integer) ) {
+                        res = new Float( v2.floatValue() % v1.floatValue() );
                     }
                     else {
-                        res = new Float( ((Integer)v2).intValue() % ((Float)v1).floatValue() );
+                        res = new Float( v2.intValue() % v1.floatValue() );
                     }
                 }
-                else if ( v1 instanceof Integer ) {
-                    if ( v2 instanceof Float ) {
-                        res = new Float( ((Float)v2).floatValue() % ((Integer)v1).intValue() );
+                else if ( !(v1 instanceof Float) ) {
+                    if ( !(v2 instanceof Integer) ) {
+                        res = new Float( v2.floatValue() % v1.intValue() );
                     }
                     else {
-                        res = new Integer( ((Integer)v2).intValue() % ((Integer)v1).intValue() );
+                        res = new Integer( v2.intValue() % v1.intValue() );
                     }
                 }
                 
