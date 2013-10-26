@@ -4,11 +4,12 @@
  */
 package com.shsrobotics.library.scrpitedrobot;
 
+import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Hashtable;
-import java.util.Vector;
 
 /**
  * A VirtualRobot has a reference to every possible IO port.  This robot is 
@@ -16,16 +17,31 @@ import java.util.Vector;
  * @author Max
  */
 public class VirtualRobot implements RobotConstants {
-    protected static final Vector SENSOR_ARRAY = new Vector();
+    protected static final Hashtable SENSOR_ARRAY = new Hashtable();
     protected static final Hashtable VARIABLE_ARRAY = new Hashtable();
+    private static BufferedOutputStream outStream = new BufferedOutputStream(System.out);
     
+    //static
     static {
         try {
-            ScriptReader.setInputStream(new FileInputStream(SCRIPT_PATH));
+            ScriptReader.setInputStream(new FileInputStream(SCRIPT_PATH+"robot.res"));
         }
         catch (FileNotFoundException fnfe) {
             VirtualRobot.throwError(SCRIPT_PATH + " does not exist; Consider checking where %appdata% actually leads to.");
-            throw new Error(SCRIPT_PATH + " does not exist; Consider checking where %appdata% actually leads to.", fnfe);
+            throw new Error(SCRIPT_PATH + " does not exist.", fnfe);
+        }
+    }
+    
+    public static void setOutputStream(OutputStream os) {
+        if ( os != null )
+            outStream = new BufferedOutputStream(os);
+    }
+    
+    static void initHardware(Object h, String name) {
+        if ( h instanceof Float || h instanceof Integer ) {
+            VARIABLE_ARRAY.put(name, h);
+            throwMessage("Initialized a number");
+            System.out.println("Initialized a number " + ((Number)h).floatValue());
         }
     }
     
@@ -49,7 +65,25 @@ public class VirtualRobot implements RobotConstants {
     }
     
     public static void throwError(String msg) {
-        
+        try {
+            outStream.write((msg + "\n").getBytes());
+        }
+        catch (IOException ioe) {
+            throw new Error(ioe);
+        }
+    }
+    
+    public static void throwMessage(String msg) {
+        try {
+            outStream.write((msg + "\n").getBytes());
+        }
+        catch (IOException ioe) {
+            throw new Error(ioe);
+        }
+    }
+    
+    protected static BufferedOutputStream getOutputStream() {
+        return outStream;
     }
     
 }

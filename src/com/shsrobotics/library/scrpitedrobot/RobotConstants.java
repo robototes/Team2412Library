@@ -14,5 +14,5 @@ public interface RobotConstants {
     public static final int ANALOG_MAX_COUNT = 8;
     public static final int PWM_MAX_COUNT = 10;
     public static final int SOLENOID_MAX_COUNT = 8;
-    public static final String SCRIPT_PATH = "%appdata%\\2412scripts\\";
+    public static final String SCRIPT_PATH = "C:\\2412scripts\\";
 }

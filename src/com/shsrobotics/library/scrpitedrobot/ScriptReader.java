@@ -24,13 +24,18 @@ public class ScriptReader {
     }
     
     private static void throwCompileError(String msg, int line) {
-        
+        try {
+            VirtualRobot.getOutputStream().write((msg + "\n").getBytes());
+        }
+        catch (IOException ioe) {
+            throw new Error(ioe);
+        }
     }
     
     private static void readResources(String path) throws FileNotFoundException {
         InputStreamReader isr;
         if ( is == null ) {
-            File file = new File(path+".res");
+            File file = new File(path + "robot.res");
             isr = new InputStreamReader(file.getInputStream());
         }
         else
@@ -40,16 +45,54 @@ public class ScriptReader {
         try {
             String line;
             int lineNum = 0;
-            while ( ((line = br.readLine()) != null )) { // c != EOF or end of transmission
+            while ( ((line = br.readLine()) != null && line.length() > 0)) { // c != EOF or end of transmission
                 lineNum++;
                 if ( line.charAt(0) == '#' ) {
                     String rtype = line.substring(1);
                     rtype = rtype.trim();
                     StringTokenizer st = new StringTokenizer(rtype, " ");
-                    if ( st.countTokens() != 2 )
-                        throwCompileError("Too many tokens in hardware definition.", lineNum);
+                    if ( st.countTokens() > 3 || st.countTokens() < 2 )
+                        throwCompileError("Bad hardware definition.", lineNum);
                     else {
-                        
+                        String[] tokens = new String[3];
+                        tokens[0] = st.nextToken();
+                        tokens[1] = st.nextToken();
+                        if ( st.hasMoreTokens() )
+                            tokens[2] = st.nextToken();
+                        else
+                            tokens[2] = "0";
+                        Object o;
+                        if ( tokens[0].equals("FLOAT") ) {
+                            // <editor-fold defaultstate="collapsed" desc="float">
+                            float v = 0;
+                            try {
+                                v = Float.parseFloat(tokens[2]);
+                            }
+                            catch (NumberFormatException nfe) {
+                                throwCompileError("Non-numerical value assigned to float: " + tokens[2] + ", defaulting to 0.", lineNum);
+                            }
+                            VirtualRobot.initHardware(new Float(v), tokens[1]);
+                            // </editor-fold>
+                        }
+                        else if ( tokens[0].equals("INT") ) {
+                            // <editor-fold defaultstate="collapsed" desc="int">
+                            int v = 0;
+                            try {
+                                v = Integer.parseInt(tokens[2]);
+                            }
+                            catch (NumberFormatException nfe) {
+                                throwCompileError("Non-numerical value assigned to int: " + tokens[2] + ", defaulting to 0.", lineNum);
+                            }
+                            VirtualRobot.initHardware(new Integer(v), tokens[1]);
+                            // </editor-fold>
+                        }
+                        else if ( tokens[0].equals("RELAY")) {
+                            // <editor-fold defaultstate="collapsed" desc="relay">
+                            
+                            // </editor-fold>
+                        }
+                        else
+                            throwCompileError("Invalid hardware type: " + tokens[0], lineNum);
                     }
                 }
             }
@@ -66,10 +109,10 @@ public class ScriptReader {
         ActionList alist = null;
         File file = new File(path+".act");
         InputStreamReader isr = new InputStreamReader(file.getInputStream());
-        
-        
         return alist;
     }
 
-    
+    public static void test() throws Exception {
+        readResources(RobotConstants.SCRIPT_PATH);
+    }
 }
