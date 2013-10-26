@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import static com.shsrobotics.library.scrpitedrobot.ScriptReader.*;
 import com.sun.squawk.util.StringTokenizer;
+import edu.wpi.first.wpilibj.Relay;
 
 /**
  *
@@ -86,9 +87,36 @@ public class ScriptReader {
                             VirtualRobot.initHardware(new Integer(v), tokens[1]);
                             // </editor-fold>
                         }
+                        else if ( tokens[0].equals("VAR") ) {
+                            // <editor-fold defaultstate="collapsed" desc="var">
+                            int vi = 0;
+                            double vd = 0;
+                            try {
+                                vi = Integer.parseInt(tokens[2]);
+                                VirtualRobot.initHardware(new Integer(vi), tokens[1]);
+                            }
+                            catch (NumberFormatException nfe) {
+                                try {
+                                    vd = Double.parseDouble(tokens[2]);
+                                    VirtualRobot.initHardware(new Double(vd), tokens[1]);
+                                }
+                                catch(NumberFormatException nfe2) {
+                                    throwCompileError("Non-numerical value assigned to VAR: " + tokens[2] + ", defaulting to 0.", lineNum);
+                                }
+                            }
+                            // </editor-fold>
+                        }
                         else if ( tokens[0].equals("RELAY")) {
                             // <editor-fold defaultstate="collapsed" desc="relay">
-                            
+                            try {
+                                o = new Relay(Integer.parseInt(tokens[2]));
+                                VirtualRobot.initHardware(o, tokens[1]);
+                            }
+                            catch ( NumberFormatException nfe) {
+                                throwCompileError("Invalid port number: " + tokens[2] + ",\nSkipping to next defintion.", lineNum);
+                                o = new VirtualSensor();
+                                VirtualRobot.initHardware(o, tokens[1]);
+                            }
                             // </editor-fold>
                         }
                         else

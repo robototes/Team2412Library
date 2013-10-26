@@ -4,6 +4,7 @@
  */
 package com.shsrobotics.library.scrpitedrobot;
 
+import edu.wpi.first.wpilibj.SensorBase;
 import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -38,10 +39,17 @@ public class VirtualRobot implements RobotConstants {
     }
     
     static void initHardware(Object h, String name) {
-        if ( h instanceof Float || h instanceof Integer ) {
+        if ( h instanceof Number ) {
             VARIABLE_ARRAY.put(name, h);
             throwMessage("Initialized a number");
             System.out.println("Initialized a number " + ((Number)h).floatValue());
+        }
+        else if ( h instanceof VirtualSensor ) {
+            SENSOR_ARRAY.put(h, name);
+        }
+        else if ( h instanceof SensorBase ) {
+            SENSOR_ARRAY.put(h, name);
+            System.out.println("Initialized a sensor");
         }
     }
     

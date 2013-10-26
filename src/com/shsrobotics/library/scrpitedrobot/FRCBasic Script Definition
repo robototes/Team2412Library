@@ -9,9 +9,12 @@ To define a piece of hardware:
     Each line with a definition starts with a pound.
 Type name
     After the # is the type of some hardware.
-    For example, RELAY, VICTOR, SOLENOID, INT, FLOAT. A full list of hardware is in a table somewhere. Find it later. Optionally, for a variable, after the name, you can put a starting value. The default is 0.
+    For example, RELAY, VICTOR, SOLENOID, INT, FLOAT. A full list of hardware is in a table somewhere. Find it later. 
 Programmer name
     The name this piece of hardware will be called in your script.
+Value
+    For hardware, this is the port it is plugged in to. Depending on the type of hardware, it may have 1 or 2 port numbers.
+    For variables, this is the starting value and is optional.
 
 Example:
 #RELAY pusherRelay
