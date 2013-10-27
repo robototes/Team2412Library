@@ -17,13 +17,28 @@ import edu.wpi.first.wpilibj.Relay;
  */
 public class ScriptReader {
     
-    private static InputStream is;
+    private static InputStream ris;
+    private static InputStream sis;
     
-    public static void setInputStream(InputStream instream) {
+    /**
+     * Sets the input stream for the resource file.
+     * @param instream should be a stream to a file. If not, an error will be thrown in the VR when the script is compiled.
+     */
+    public static void setResourceInputStream(InputStream instream) {
         if ( instream != null )
-            is = instream;
+            ris = instream;
     }
     
+    /**
+     * Sets the input stream for the script file.
+     * @param instream should be a stream to a file. If not, an error will be thrown in the VR when the script is compiled.
+     */
+    public static void setScriptInputStream(InputStream instream) {
+        if ( instream != null )
+            sis = instream;
+    }
+    
+    // throw a compile error
     private static void throwCompileError(String msg, int line) {
         try {
             VirtualRobot.getOutputStream().write((msg + "\n").getBytes());
@@ -33,14 +48,15 @@ public class ScriptReader {
         }
     }
     
+    //initializes the hardware.
     private static void readResources(String path) throws FileNotFoundException {
         InputStreamReader isr;
-        if ( is == null ) {
+        if ( ris == null ) {
             File file = new File(path + "robot.res");
             isr = new InputStreamReader(file.getInputStream());
         }
         else
-            isr = new InputStreamReader(is);
+            isr = new InputStreamReader(ris);
         
         BufferedReader br = new BufferedReader(isr);
         try {
@@ -133,13 +149,24 @@ public class ScriptReader {
         }
     }
     
+    // compiles the script to an ActionList.
     private static ActionList readActionList(String path) throws FileNotFoundException {
-        ActionList alist = null;
-        File file = new File(path+".act");
-        InputStreamReader isr = new InputStreamReader(file.getInputStream());
+        InputStreamReader isr;
+        if ( ris == null ) {
+            File file = new File(path + "robot.res");
+            isr = new InputStreamReader(file.getInputStream());
+        }
+        else
+            isr = new InputStreamReader(ris);
+        ActionList alist = new ActionList();
+        
         return alist;
     }
-
+    
+    /**
+     * Tests whatever is within the test() function.
+     * @throws Exception 
+     */
     public static void test() throws Exception {
         readResources(RobotConstants.SCRIPT_PATH);
     }

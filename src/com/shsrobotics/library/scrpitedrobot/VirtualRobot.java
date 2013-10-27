@@ -25,7 +25,7 @@ public class VirtualRobot implements RobotConstants {
     //static
     static {
         try {
-            ScriptReader.setInputStream(new FileInputStream(SCRIPT_PATH+"robot.res"));
+            ScriptReader.setResourceInputStream(new FileInputStream(SCRIPT_PATH+"robot.res"));
         }
         catch (FileNotFoundException fnfe) {
             VirtualRobot.throwError(SCRIPT_PATH + " does not exist; Consider checking where %appdata% actually leads to.");

@@ -13,7 +13,7 @@ Type name
 Programmer name
     The name this piece of hardware will be called in your script.
 Value
-    For hardware, this is the port it is plugged in to. Depending on the type of hardware, it may have 1 or 2 port numbers.
+    For hardware, this is the port it is plugged in to. Depending on the type of hardware, it may have multiple port numbers.
     For variables, this is the starting value and is optional.
 
 Example:
@@ -30,7 +30,7 @@ Valid types are FLOAT, STRING?, INT, BOOLEAN.
 Variables are reset every pass through the script.
 If you need more complex logic not possible in this script then you can create classes for each instance of logic and call
     NATIVE com.package.name.ClassName
-where com.package.name is the package the class is contained in in the NetBeans project, and ClassName is the name of the class. See text file titled "Importing java into your FRCBasic script".
+where com.package.name is the package the class is contained in in the NetBeans project, and ClassName is the name of the class. See text file "Using custom java in your FRCBasic script" for more.
 
 commands
     NATIVE
@@ -39,7 +39,13 @@ commands
     IF / ELSE
     
     1*(4+2)*(4-5%6)
-    
-    
+Order of Operations
+1.  *, /
+2.  +, -
+3.  %
+4.  <<, >>
+5.  ^, &, |, ~
+
+
 
 

@@ -12,7 +12,7 @@ import java.io.FileInputStream;
  */
 public class ScriptReaderTest {
     public static void _main(String[] args) throws Exception {
-        ScriptReader.setInputStream(new FileInputStream(RobotConstants.SCRIPT_PATH + "\\robot.res"));
+        ScriptReader.setResourceInputStream(new FileInputStream(RobotConstants.SCRIPT_PATH + "\\robot.res"));
         ScriptReader.test();
     }
 }
