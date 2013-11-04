@@ -76,7 +76,6 @@ public abstract class Task {
 	
 	
 	class TaskThread extends Thread {
-		@Override
 		public final void run() {
 			timer.start();
 			initialize();

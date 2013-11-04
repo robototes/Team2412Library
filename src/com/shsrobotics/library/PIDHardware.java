@@ -24,14 +24,12 @@ public abstract class PIDHardware {
 	public abstract double read();
 	
 	public class Source implements PIDSource {
-		@Override
 		public double pidGet() {
 			return read();
 		}
 	}
 
 	public class Output implements PIDOutput {
-		@Override
 		public void pidWrite(double output) {
 			write(output);
 		}
