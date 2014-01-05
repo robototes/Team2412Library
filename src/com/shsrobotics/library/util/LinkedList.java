@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.shsrobotics.library.util;
 
 /**
@@ -21,14 +17,12 @@ public class LinkedList {
     }
     
     public void append(Object value) {
-        if ( start == null )
+        if ( start == null ) {
             start = new Node(value, null);
+            end = start;
+        }
         else {
-            Node curr = start;
-            while ( curr.next != null ) {
-                curr = curr.next;
-            }
-            curr.next = new Node(value, curr);
+            end.next = new Node(value, null);
             size++;
         }
     }

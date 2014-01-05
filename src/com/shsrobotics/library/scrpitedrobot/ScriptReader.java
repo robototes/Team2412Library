@@ -10,15 +10,23 @@ import java.io.InputStreamReader;
 import static com.shsrobotics.library.scrpitedrobot.ScriptReader.*;
 import com.sun.squawk.util.StringTokenizer;
 import edu.wpi.first.wpilibj.Relay;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
- *
+ * regex used:
+ * [a-zA-Z][a-zA-Z0-9]*     variable name
+ * [\s]*?[a-zA-Z][a-zA-Z0-9]*[\s]*?[=][\s]*?[=][0-9.]*    varName = number
+ * 
+ * 
  * @author Max
  */
 public class ScriptReader {
     
     private static InputStream ris;
     private static InputStream sis;
+    
+    public static Pattern VAR_EQUALS_VALUE = Pattern.compile("[\\s]*?[a-zA-Z][a-zA-Z0-9]*[\\s]*?[=][\\s]*?[=][0-9.]*[\\s]*"); // anchor the line
     
     /**
      * Sets the input stream for the resource file.
@@ -39,7 +47,7 @@ public class ScriptReader {
     }
     
     // throw a compile error
-    private static void throwCompileError(String msg, int line) {
+    protected static void throwCompileError(String msg, int line) {
         try {
             VirtualRobot.getOutputStream().write((msg + "\n").getBytes());
         }
@@ -49,7 +57,7 @@ public class ScriptReader {
     }
     
     //initializes the hardware.
-    private static void readResources(String path) throws FileNotFoundException {
+    private static void readResources(String path) throws FileNotFoundException, IOException {
         InputStreamReader isr;
         if ( ris == null ) {
             File file = new File(path + "robot.res");
@@ -59,12 +67,11 @@ public class ScriptReader {
             isr = new InputStreamReader(ris);
         
         BufferedReader br = new BufferedReader(isr);
-        try {
             String line;
             int lineNum = 0;
-            while ( ((line = br.readLine()) != null && line.length() > 0)) { // c != EOF or end of transmission
+            while ( ((line = br.readLine()) != null )) { // c != EOF or end of transmission
                 lineNum++;
-                if ( line.charAt(0) == '#' ) {
+                if ( line.length() > 0 && line.charAt(0) == '#' ) {
                     String rtype = line.substring(1);
                     rtype = rtype.trim();
                     StringTokenizer st = new StringTokenizer(rtype, " ");
@@ -143,22 +150,42 @@ public class ScriptReader {
             if ( lineNum == 0 ) {
                 throwCompileError("No hardware defintions.", 0);
             }
-        }
-        catch (IOException ioe) {
-            throw new Error(ioe);
-        }
     }
     
     // compiles the script to an ActionList.
-    private static ActionList readActionList(String path) throws FileNotFoundException {
+    private static ActionList readScript(String path) throws FileNotFoundException, IOException {
         InputStreamReader isr;
         if ( ris == null ) {
-            File file = new File(path + "robot.res");
+            File file = new File(path + "robot.scr");
             isr = new InputStreamReader(file.getInputStream());
         }
         else
-            isr = new InputStreamReader(ris);
+            isr = new InputStreamReader(sis);
+        
+        BufferedReader br = new BufferedReader(isr);
+        
         ActionList alist = new ActionList();
+        // this is manipulated if parentheses are used in math expressions, so we use a StringBuilder ?
+        int line = 0;
+        String cline;
+        Matcher matcher;
+        while ( ( cline = br.readLine()) != null ) {
+            line++;
+            matcher = VAR_EQUALS_VALUE.matcher(cline);
+            if ( matcher.matches() ) {
+                StringTokenizer st = new StringTokenizer(cline, "=");
+                if (st.countTokens() == 2 ) {
+                    String varName = st.nextToken().trim();
+                    String value = st.nextToken().trim();
+                    if ( VirtualRobot.hasLocalVariable(varName) ) {
+                        VirtualRobot.setLocalVariable(varName, ScriptUtil.parseNumber(value, line));
+                    }
+                }
+            }
+            else {
+                
+            }
+        }
         
         return alist;
     }

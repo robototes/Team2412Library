@@ -20,6 +20,7 @@ import java.util.Hashtable;
 public class VirtualRobot implements RobotConstants {
     protected static final Hashtable SENSOR_ARRAY = new Hashtable();
     protected static final Hashtable VARIABLE_ARRAY = new Hashtable();
+    protected static final Hashtable NON_STATIC_VAR_ARRAY = new Hashtable();
     private static BufferedOutputStream outStream = new BufferedOutputStream(System.out);
     
     //static
@@ -70,6 +71,21 @@ public class VirtualRobot implements RobotConstants {
     
     public static boolean hasVariable(String key) {
         return VARIABLE_ARRAY.containsKey(key);
+    }
+    
+    public static boolean hasLocalVariable(String key) {
+        return NON_STATIC_VAR_ARRAY.containsKey(key);
+    }
+    
+    public static Number getLocalVariable(String key) {
+        return (Number)NON_STATIC_VAR_ARRAY.get(key);
+    }
+    
+    public static void setLocalVariable(String key, Number n) {
+        if ( hasLocalVariable(key) ) {
+            NON_STATIC_VAR_ARRAY.remove(key);
+            NON_STATIC_VAR_ARRAY.put(key, n);
+        }
     }
     
     public static void throwError(String msg) {

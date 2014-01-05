@@ -3,6 +3,7 @@
 
 
 1. The Resource File
+On the robot, this file must be called "robot.res"
 Every robot uses hardware; This file defines what hardware the robot uses.  It also tells the VirtualRobot what pieces of hardware to initialize.
 To define a piece of hardware:
 #
@@ -21,6 +22,7 @@ Example:
 defines a relay with name pusherRelay
 
 2. The Script File
+On the robot, this file must be called "robot.scr"
 This is the script that the robot uses to tell it what to do. It can tell it to get input from the joysticks or to send a message to the dashboard.
 This script has NO SCOPE.  
 Variables are declared on the fly by a "#new type name", ex.
@@ -37,6 +39,8 @@ commands
     PRINT STRING
     GOTO
     IF / ELSE
+    SET for motors, etc
+    GET for sensors
     
     1*(4+2)*(4-5%6)
 Order of Operations
