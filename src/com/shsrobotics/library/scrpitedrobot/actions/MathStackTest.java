@@ -43,7 +43,7 @@ public class MathStackTest {
         
         MathStackAction.start(new UntypedNumber(7));
         MathStackAction.push(new Integer(8), MathStackAction.Op.SUB);
-        System.out.println(((Number)MathStackAction.evaluate().intValue()));
+        System.out.println(((Number)MathStackAction.evaluate()).intValue());
         
     }
 }
