@@ -38,6 +38,7 @@ public class AnalogChannel extends SensorBase implements PIDSource, LiveWindowSe
     };
     private tAccumulator m_accumulator;
     private long m_accumulatorOffset;
+    private boolean m_shouldUseVoltageForPID;
 
     /**
      * Construct an analog channel on the default module.
@@ -55,6 +56,7 @@ public class AnalogChannel extends SensorBase implements PIDSource, LiveWindowSe
      * @param channel The channel number to represent.
      */
     public AnalogChannel(final int moduleNumber, final int channel) {
+        m_shouldUseVoltageForPID = false;
         checkAnalogModule(moduleNumber);
         checkAnalogChannel(channel);
         m_channel = channel;
@@ -339,13 +341,32 @@ public class AnalogChannel extends SensorBase implements PIDSource, LiveWindowSe
         }
         return false;
     }
+    
+    /**
+     * Set whether to use voltage of value for PIDGet
+     * This method determines whether PIDGet uses average voltage or value for
+     * PID controllers for a particular channel. This is to preserve compatibility
+     * with existing programs and is likely to change in favor of voltage for
+     * RoboRIO.
+     * @param m_shouldUseVoltageForPID True if voltage should be used for PIDGet. The
+     * default is to use the value as it has been since the creation of the library.
+     */
+    public void setVoltageForPID(boolean shouldUseVoltageForPID) {
+        m_shouldUseVoltageForPID = shouldUseVoltageForPID;
+    }
 
     /**
-     * Get the average value for usee with PIDController
+     * Get the average value for use with PIDController.
+     * This can be changed to use average voltage by calling setVoltageForPID().
      * @return the average value
      */
     public double pidGet() {
-        return getAverageValue();
+        if (m_shouldUseVoltageForPID) {
+            return getAverageVoltage();
+        }
+        else {
+            return getAverageValue();
+        }
     }
 
     /*

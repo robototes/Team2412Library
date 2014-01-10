@@ -115,6 +115,54 @@ public abstract class Trigger implements Sendable{
             }
         }.start();
     }
+    
+   /**
+     * Toggles a command when the trigger becomes active
+     * @param command the command to toggle
+     */
+    public void toggleWhenActive(final Command command) {
+         new ButtonScheduler() {
+
+            boolean pressedLast = grab();
+
+            public void execute() {
+                if (grab()) {
+                    if (!pressedLast) {
+                        pressedLast = true;
+                        if (command.isRunning()){
+                            command.cancel();
+                        } else{
+                            command.start();
+                        }
+                    }
+                } else {
+                    pressedLast = false;
+                }
+            }
+        }.start();
+    }
+    
+   /**
+     * Cancels a command when the trigger becomes active
+     * @param command the command to cancel
+     */
+    public void cancelWhenActive(final Command command) {
+         new ButtonScheduler() {
+
+            boolean pressedLast = grab();
+
+            public void execute() {
+                if (grab()) {
+                    if (!pressedLast) {
+                        pressedLast = true;
+                        command.cancel();
+                    }
+                } else {
+                    pressedLast = false;
+                }
+            }
+        }.start();
+    }
 
     /**
      * An internal class of {@link Trigger}.  The user should ignore this, it is

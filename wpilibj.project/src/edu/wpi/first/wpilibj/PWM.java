@@ -66,7 +66,7 @@ public class PWM extends SensorBase implements LiveWindowSendable {
     private int m_channel;
     private DigitalModule m_module;
     /**
-     * kDefaultPwmPeriod is "ticks" where each tick is 6.525us
+     * kDefaultPwmPeriod is in ms
      *
      * - 20ms periods (50 Hz) are the "safest" setting in that this works for all devices
      * - 20ms periods seem to be desirable for Vex Motors
@@ -80,18 +80,16 @@ public class PWM extends SensorBase implements LiveWindowSendable {
      *
      * kDefaultPwmPeriod is the 1x period (5.05 ms).  In hardware, the period scaling is implemented as an
      * output squelch to get longer periods for old devices.
-     *
-     * Set to 5.05 ms period / 6.525us clock = 774
      */
-    protected static final int kDefaultPwmPeriod = 774;
+    protected static final double kDefaultPwmPeriod = 5.05;
     /**
-     * kDefaultMinPwmHigh is "ticks" where each tick is 6.525us
-     *
-     * - There are 128 pwm values less than the center, so...
-     * - The minimum output pulse length is 1.5ms - 128 * 6.525us = 0.665ms
-     * - 0.665ms / 6.525us per tick = 102
+     * kDefaultPwmCenter is the PWM range center in ms
      */
-    protected static final int kDefaultMinPwmHigh = 102;
+    protected static final double kDefaultPwmCenter = 1.5;
+    /**
+     * kDefaultPWMStepsDown is the number of PWM steps below the centerpoint
+     */
+    protected static final int kDefaultPwmStepsDown = 128;
     public static final int kPwmDisabled = 0;
     boolean m_eliminateDeadband;
     int m_maxPwm;
@@ -170,6 +168,7 @@ public class PWM extends SensorBase implements LiveWindowSendable {
      * Set the bounds on the PWM values.
      * This sets the bounds on the PWM values for a particular each type of controller. The values
      * determine the upper and lower speeds as well as the deadband bracket.
+     * @deprecated Recommended to set bounds in ms using {@link #setBounds(double, double, double, double, double)}
      * @param max The Minimum pwm value
      * @param deadbandMax The high end of the deadband range
      * @param center The center speed (off)
@@ -184,6 +183,26 @@ public class PWM extends SensorBase implements LiveWindowSendable {
         m_minPwm = min;
     }
     
+    /**
+    * Set the bounds on the PWM pulse widths.
+    * This sets the bounds on the PWM values for a particular type of controller. The values
+    * determine the upper and lower speeds as well as the deadband bracket.
+    * @param max The max PWM pulse width in ms
+    * @param deadbandMax The high end of the deadband range pulse width in ms
+    * @param center The center (off) pulse width in ms
+    * @param deadbandMin The low end of the deadband pulse width in ms
+    * @param min The minimum pulse width in ms
+    */
+   void setBounds(double max, double deadbandMax, double center, double deadbandMin, double min)
+   {
+           double loopTime = m_module.getLoopTiming()/(kSystemClockTicksPerMicrosecond*1e3);
+
+           m_maxPwm = (int)((max-kDefaultPwmCenter)/loopTime+kDefaultPwmStepsDown-1);
+           m_deadbandMaxPwm = (int)((deadbandMax-kDefaultPwmCenter)/loopTime+kDefaultPwmStepsDown-1);
+           m_centerPwm = (int)((center-kDefaultPwmCenter)/loopTime+kDefaultPwmStepsDown-1);
+           m_deadbandMinPwm = (int)((deadbandMin-kDefaultPwmCenter)/loopTime+kDefaultPwmStepsDown-1);
+           m_minPwm = (int)((min-kDefaultPwmCenter)/loopTime+kDefaultPwmStepsDown-1);	
+   }
     
     /**
      * Gets the module number associated with the PWM Object.

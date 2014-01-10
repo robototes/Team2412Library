@@ -31,7 +31,7 @@ public class Servo extends PWM implements IDevice {
      * well as the minimum and maximum PWM values supported by the servo.
      */
     private void initServo() {
-        setBounds(245, 0, 0, 0, 11);
+        setBounds(2.27, 0, 0, 0, .743);
         setPeriodMultiplier(PeriodMultiplier.k4X);
 
         LiveWindow.addActuator("Servo", getModuleNumber(), getChannel(), this);
@@ -148,7 +148,6 @@ public class Servo extends PWM implements IDevice {
     public void startLiveWindowMode() {
         m_table_listener = new ITableListener() {
             public void valueChanged(ITable itable, String key, Object value, boolean bln) {
-                System.out.println(key+": "+value);
                 set(((Double) value).doubleValue());
             }
         };

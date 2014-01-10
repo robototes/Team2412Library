@@ -24,14 +24,14 @@ public class Talon extends SafePWM implements SpeedController, IDeviceController
      * the deadband or inability to saturate the controller in either direction, calibration is recommended.
      * The calibration procedure can be found in the Talon User Manual available from CTRE.
      * 
-     *   - 209 = full "forward"
-     *   - 133 = the "high end" of the deadband range
-     *   - 129 = center of the deadband range (off)
-     *   - 125 = the "low end" of the deadband range
-     *   - 49 = full "reverse"
+     *   - 2.037ms = full "forward"
+     *   - 1.539ms = the "high end" of the deadband range
+     *   - 1.513ms = center of the deadband range (off)
+     *   - 1.487ms = the "low end" of the deadband range
+     *   - .989ms = full "reverse"
      */
     private void initTalon() {
-        setBounds(211, 133, 129, 125, 49);
+        setBounds(2.037, 1.539, 1.513, 1.487, .989);
         setPeriodMultiplier(PeriodMultiplier.k2X);
         setRaw(m_centerPwm);
 

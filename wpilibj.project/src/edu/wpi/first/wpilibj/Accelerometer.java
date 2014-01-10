@@ -101,7 +101,7 @@ public class Accelerometer extends SensorBase implements PIDSource, ISensor, Liv
      * Set the accelerometer sensitivity.
      *
      * This sets the sensitivity of the accelerometer used for calculating the acceleration.
-     * The sensitivity varys by accelerometer model. There are constants defined for various models.
+     * The sensitivity varies by accelerometer model.
      *
      * @param sensitivity The sensitivity of accelerometer in Volts per G.
      */
@@ -112,7 +112,7 @@ public class Accelerometer extends SensorBase implements PIDSource, ISensor, Liv
     /**
      * Set the voltage that corresponds to 0 G.
      *
-     * The zero G voltage varys by accelerometer model. There are constants defined for various models.
+     * The zero G voltage varies by accelerometer model.
      *
      * @param zero The zero G voltage.
      */

@@ -1435,7 +1435,6 @@ public class CANJaguar implements MotorSafety, PIDOutput, SpeedController, LiveW
         set(0); // Stop for safety
         m_table_listener = new ITableListener() {
             public void valueChanged(ITable itable, String key, Object value, boolean bln) {
-                System.out.println(key+": "+value);
                 set(((Double) value).doubleValue());
             }
         };

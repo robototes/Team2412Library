@@ -9,12 +9,13 @@ package edu.wpi.first.wpilibj;
 import edu.wpi.first.wpilibj.communication.UsageReporting;
 import edu.wpi.first.wpilibj.visa.Visa;
 import edu.wpi.first.wpilibj.visa.VisaException;
+import java.io.UnsupportedEncodingException;
 
 /**
  * Driver for the RS-232 serial port on the cRIO.
  *
  * The current implementation uses the VISA formatted I/O mode.  This means that
- *   all traffic goes through the fomatted buffers.  This allows the intermingled
+ *   all traffic goes through the formatted buffers.  This allows the intermingled
  *   use of print(), readString(), and the raw buffer accessors read() and write().
  *
  * More information can be found in the NI-VISA User Manual here:
@@ -180,6 +181,9 @@ public class SerialPort {
         Visa.viSetAttribute(m_portHandle, Visa.VI_ATTR_ASRL_PARITY, parity.value);
 
         Visa.viSetAttribute(m_portHandle, Visa.VI_ATTR_ASRL_STOP_BITS, stopBits.value);
+        
+        // Set the default read buffer size to 1 to return bytes immediately
+        setReadBufferSize(1);
 
         // Set the default timeout to 5 seconds.
         setTimeout(5.0f);
@@ -250,7 +254,7 @@ public class SerialPort {
      * Enable termination and specify the termination character.
      *
      * Termination is currently only implemented for receive.
-     * When the the terminator is recieved, the read() or readString() will return
+     * When the the terminator is received, the read() or readString() will return
      *   fewer bytes than requested, stopping after the terminator.
      *
      * @param terminator The character to use for termination.
@@ -265,7 +269,7 @@ public class SerialPort {
      * Enable termination and specify the termination character.
      *
      * Termination is currently only implemented for receive.
-     * When the the terminator is recieved, the read() or readString() will return
+     * When the the terminator is received, the read() or readString() will return
      *   fewer bytes than requested, stopping after the terminator.
      *
      * The default terminator is '\n'
@@ -294,6 +298,7 @@ public class SerialPort {
     /**
      * Output formatted text to the serial port.
      *
+     * @deprecated use write(string.getBytes()) instead
      * @bug All pointer-based parameters seem to return an error.
      *
      * @param write A string to write
@@ -319,11 +324,12 @@ public class SerialPort {
      */
     public String readString(int count) throws VisaException {
         byte[] out = Visa.viBufRead(m_portHandle, count);
-        StringBuffer s = new StringBuffer(count + 1);
-        for (int i = 0; i < count; i++) {
-            s.append(out[i]);
+        try {
+            return new String(out, 0, count, "US-ASCII");
+        } catch (UnsupportedEncodingException ex) {
+            ex.printStackTrace();
+            return new String();
         }
-        return s.toString();
     }
 
     /**
@@ -351,12 +357,43 @@ public class SerialPort {
      * Configure the timeout of the serial port.
      *
      * This defines the timeout for transactions with the hardware.
-     * It will affect reads and very large writes.
+     * It will affect reads if less bytes are available than the
+     * read buffer size (defaults to 1) and very large writes.
      *
      * @param timeout The number of seconds to to wait for I/O.
      */
     public void setTimeout(double timeout) throws VisaException {
         Visa.viSetAttribute(m_portHandle, Visa.VI_ATTR_TMO_VALUE, (int) (timeout * 1e3));
+    }
+    
+    /**
+     * Specify the size of the input buffer.
+     * 
+     * Specify the amount of data that can be stored before data
+     * from the device is returned to Read.  If you want
+     * data that is received to be returned immediately, set this to 1.
+     * 
+     * It the buffer is not filled before the read timeout expires, all
+     * data that has been received so far will be returned.
+     * 
+     * @param size The read buffer size.
+     */
+    void setReadBufferSize(int size) throws VisaException
+    {
+       Visa.viSetBuf(m_portHandle, Visa.VI_READ_BUF, size);
+    }
+    
+    /**
+    * Specify the size of the output buffer.
+    * 
+    * Specify the amount of data that can be stored before being
+    * transmitted to the device.
+    * 
+    * @param size The write buffer size.
+    */
+    void setWriteBufferSize(int size) throws VisaException
+    {
+        Visa.viSetBuf(m_portHandle, Visa.VI_WRITE_BUF, size);
     }
 
     /**
@@ -373,7 +410,7 @@ public class SerialPort {
     public void setWriteBufferMode(WriteBufferMode mode) throws VisaException {
         Visa.viSetAttribute(m_portHandle, Visa.VI_ATTR_WR_BUF_OPER_MODE, mode.value);
     }
-
+    
     /**
      * Force the output buffer to be written to the port.
      *

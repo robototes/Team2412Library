@@ -185,7 +185,6 @@ public class DoubleSolenoid extends SolenoidBase implements LiveWindowSendable {
         set(Value.kOff); // Stop for safety
         m_table_listener = new ITableListener() {
             public void valueChanged(ITable itable, String key, Object value, boolean bln) {
-                System.out.println(key+": "+value);
 				//TODO: this is bad also
                 if (value.toString().equals("Reverse"))
 					set(Value.kReverse);

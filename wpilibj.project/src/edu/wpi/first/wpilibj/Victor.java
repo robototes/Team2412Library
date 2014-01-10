@@ -26,14 +26,14 @@ public class Victor extends SafePWM implements SpeedController, IDeviceControlle
      * The calibration procedure can be found in the Victor 884 User Manual available from VEX Robotics:
      * http://content.vexrobotics.com/docs/ifi-v884-users-manual-9-25-06.pdf
      * 
-     *   - 208 = full "forward"
-     *   - 131 = the "high end" of the deadband range
-     *   - 128 = center of the deadband range (off)
-     *   - 125 = the "low end" of the deadband range
-     *   - 54 = full "reverse"
+     *   - 2.027ms = full "forward"
+     *   - 1.525ms = the "high end" of the deadband range
+     *   - 1.507ms = center of the deadband range (off)
+     *   - 1.49ms = the "low end" of the deadband range
+     *   - 1.026ms = full "reverse"
      */
     private void initVictor() {
-        setBounds(208, 131, 128, 125, 54);
+        setBounds(2.027, 1.525, 1.507, 1.49, 1.026);
         setPeriodMultiplier(PeriodMultiplier.k2X);
         setRaw(m_centerPwm);
 

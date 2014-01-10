@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj.tables.ITable;
  * Compressor object.
  * The Compressor object is designed to handle the operation of the compressor, pressure sensor and
  * relay for a FIRST robot pneumatics system. The Compressor object starts a task which runs in the
- * backround and periodically polls the pressure sensor and operates the relay that controls the
+ * background and periodically polls the pressure sensor and operates the relay that controls the
  * compressor.
  */
 public class Compressor extends SensorBase implements IDevice, LiveWindowSendable{

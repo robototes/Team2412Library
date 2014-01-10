@@ -39,7 +39,7 @@ public class Solenoid extends SolenoidBase implements LiveWindowSendable {
                     "Solenoid channel " + m_channel + " on module " + m_moduleNumber + " is already allocated");
         }
 
-        LiveWindow.addSensor("Solenoid", m_moduleNumber, m_channel, this);
+        LiveWindow.addActuator("Solenoid", m_moduleNumber, m_channel, this);
         UsageReporting.report(UsageReporting.kResourceType_Solenoid, m_channel, m_moduleNumber - 1);
     }
 
@@ -136,7 +136,6 @@ public class Solenoid extends SolenoidBase implements LiveWindowSendable {
         set(false); // Stop for safety
         m_table_listener = new ITableListener() {
             public void valueChanged(ITable itable, String key, Object value, boolean bln) {
-                System.out.println(key+": "+value);
                 set(((Boolean) value).booleanValue());
             }
         };

@@ -4,45 +4,59 @@
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
-
 package edu.wpi.first.wpilibj;
 
+import com.sun.squawk.microedition.io.FileConnection;
 import edu.wpi.first.wpilibj.communication.FRCControl;
 import edu.wpi.first.wpilibj.communication.UsageReporting;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import javax.microedition.io.Connector;
 import javax.microedition.midlet.MIDlet;
 import javax.microedition.midlet.MIDletStateChangeException;
 
 /**
- * Implement a Robot Program framework.
- * The RobotBase class is intended to be subclassed by a user creating a robot program.
- * Overridden autonomous() and operatorControl() methods are called at the appropriate time
- * as the match proceeds. In the current implementation, the Autonomous code will run to
- * completion before the OperatorControl code could start. In the future the Autonomous code
- * might be spawned as a task, then killed at the end of the Autonomous period.
+ * Implement a Robot Program framework. The RobotBase class is intended to be
+ * subclassed by a user creating a robot program. Overridden autonomous() and
+ * operatorControl() methods are called at the appropriate time as the match
+ * proceeds. In the current implementation, the Autonomous code will run to
+ * completion before the OperatorControl code could start. In the future the
+ * Autonomous code might be spawned as a task, then killed at the end of the
+ * Autonomous period.
  */
 public abstract class RobotBase extends MIDlet {
+
     /**
-     * The VxWorks priority that robot code should work at (so Java code should run at)
+     * The VxWorks priority that robot code should work at (so Java code should
+     * run at)
      */
     public static final int ROBOT_TASK_PRIORITY = 101;
-    
     /**
-     * Boolean System property. If true (default), send System.err messages to the driver station.
+     * Boolean System property. If true (default), send System.err messages to
+     * the driver station.
      */
     public final static String ERRORS_TO_DRIVERSTATION_PROP = "first.driverstation.senderrors";
-
+    /**
+     * name and contents of the version file that is read by the DS to determine
+     * the library version
+     */
+    protected final static String FILE_NAME = "file:///FRC_Lib_Version.ini";
+    protected final static String VERSION_CONTENTS = "Java 2014 Update 0";
     protected final DriverStation m_ds;
     private final Watchdog m_watchdog = Watchdog.getInstance();
 
     /**
-     * Constructor for a generic robot program.
-     * User code should be placed in the constructor that runs before the Autonomous or Operator
-     * Control period starts. The constructor will run to completion before Autonomous is entered.
+     * Constructor for a generic robot program. User code should be placed in
+     * the constructor that runs before the Autonomous or Operator Control
+     * period starts. The constructor will run to completion before Autonomous
+     * is entered.
      *
-     * This must be used to ensure that the communications code starts. In the future it would be
-     * nice to put this code into it's own task that loads on boot so ensure that it runs.
+     * This must be used to ensure that the communications code starts. In the
+     * future it would be nice to put this code into it's own task that loads on
+     * boot so ensure that it runs.
      */
     protected RobotBase() {
         // TODO: StartCAPI();
@@ -75,18 +89,32 @@ public abstract class RobotBase extends MIDlet {
     }
 
     /**
-     * Return the instance of the Watchdog timer.
-     * Get the watchdog timer so the user program can either disable it or feed it when
-     * necessary.
+     * Return the instance of the Watchdog timer. Get the watchdog timer so the
+     * user program can either disable it or feed it when necessary.
      *
      * @return The Watchdog timer.
      */
     public Watchdog getWatchdog() {
         return m_watchdog;
     }
+  
+    /**
+     * @return If the robot is running in simulation.
+     */
+    public static boolean isSimulation() {
+        return false;
+    }
+
+    /**
+     * @return If the robot is running in the real world.
+     */
+    public static boolean isReal() {
+        return true;
+    }
 
     /**
      * Determine if the Robot is currently disabled.
+     *
      * @return True if the Robot is currently disabled by the field controls.
      */
     public boolean isDisabled() {
@@ -95,6 +123,7 @@ public abstract class RobotBase extends MIDlet {
 
     /**
      * Determine if the Robot is currently enabled.
+     *
      * @return True if the Robot is currently enabled by the field controls.
      */
     public boolean isEnabled() {
@@ -103,15 +132,19 @@ public abstract class RobotBase extends MIDlet {
 
     /**
      * Determine if the robot is currently in Autonomous mode.
-     * @return True if the robot is currently operating Autonomously as determined by the field controls.
+     *
+     * @return True if the robot is currently operating Autonomously as
+     * determined by the field controls.
      */
     public boolean isAutonomous() {
         return m_ds.isAutonomous();
     }
-    
+
     /**
      * Determine if the robot is currently in Test mode
-     * @return True if the robot is currently operating in Test mode as determined by the driver station.
+     *
+     * @return True if the robot is currently operating in Test mode as
+     * determined by the driver station.
      */
     public boolean isTest() {
         return m_ds.isTest();
@@ -119,7 +152,9 @@ public abstract class RobotBase extends MIDlet {
 
     /**
      * Determine if the robot is currently in Operator Control mode.
-     * @return True if the robot is currently operating in Tele-Op mode as determined by the field controls.
+     *
+     * @return True if the robot is currently operating in Tele-Op mode as
+     * determined by the field controls.
      */
     public boolean isOperatorControl() {
         return m_ds.isOperatorControl();
@@ -127,7 +162,9 @@ public abstract class RobotBase extends MIDlet {
 
     /**
      * Indicates if new data is available from the driver station.
-     * @return Has new data arrived over the network since the last time this function was called?
+     *
+     * @return Has new data arrived over the network since the last time this
+     * function was called?
      */
     public boolean isNewDataAvailable() {
         return m_ds.isNewControlData();
@@ -153,8 +190,35 @@ public abstract class RobotBase extends MIDlet {
     }
 
     /**
+     * Write the version string to the root directory
+     */
+    protected void writeVersionString() {
+        FileConnection file = null;
+        try {
+            file = (FileConnection) Connector.open(FILE_NAME, Connector.WRITE);
+
+            file.create();
+
+            OutputStream output = file.openOutputStream();
+            PrintStream ps = new PrintStream(output);
+
+            ps.println(VERSION_CONTENTS);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } finally {
+            if (file != null) {
+                try {
+                    file.close();
+                } catch (IOException ex) {
+                }
+            }
+        }
+    }
+
+    /**
      * Starting point for the applications. Starts the OtaServer and then runs
      * the robot.
+     *
      * @throws javax.microedition.midlet.MIDletStateChangeException
      */
     protected final void startApp() throws MIDletStateChangeException {
@@ -164,6 +228,8 @@ public abstract class RobotBase extends MIDlet {
         Watchdog.getInstance().setEnabled(false);
         FRCControl.observeUserProgramStarting();
         UsageReporting.report(UsageReporting.kResourceType_Language, UsageReporting.kLanguage_Java);
+
+        writeVersionString();
 
         try {
             this.startCompetition();
@@ -189,18 +255,19 @@ public abstract class RobotBase extends MIDlet {
     }
 
     /**
-     * Called if the MIDlet is terminated by the system.
-     * I.e. if startApp throws any exception other than MIDletStateChangeException,
-     * if the isolate running the MIDlet is killed with Isolate.exit(), or
-     * if VM.stopVM() is called.
+     * Called if the MIDlet is terminated by the system. I.e. if startApp throws
+     * any exception other than MIDletStateChangeException, if the isolate
+     * running the MIDlet is killed with Isolate.exit(), or if VM.stopVM() is
+     * called.
      *
      * It is not called if MIDlet.notifyDestroyed() was called.
      *
      * @param unconditional If true when this method is called, the MIDlet must
-     *    cleanup and release all resources. If false the MIDlet may throw
-     *    MIDletStateChangeException  to indicate it does not want to be destroyed
-     *    at this time.
-     * @throws MIDletStateChangeException if there is an exception in terminating the midlet
+     * cleanup and release all resources. If false the MIDlet may throw
+     * MIDletStateChangeException to indicate it does not want to be destroyed
+     * at this time.
+     * @throws MIDletStateChangeException if there is an exception in
+     * terminating the midlet
      */
     protected final void destroyApp(boolean unconditional) throws MIDletStateChangeException {
     }

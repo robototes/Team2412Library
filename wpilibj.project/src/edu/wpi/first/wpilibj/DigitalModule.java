@@ -50,7 +50,7 @@ public class DigitalModule extends Module {
     }
 
     /**
-     * Convert a channel from it's fpge reference
+     * Convert a channel from it's fpga reference
      * @param channel the channel to convert
      * @return the converted channel
      */
@@ -78,9 +78,15 @@ public class DigitalModule extends Module {
             System.out.print(", expecting: ");
             System.out.println(kExpectedLoopTiming);
         }
+        
+        //Calculate the length, in ms, of one DIO loop
+        double loopTime = tDIO.readLoopTiming()/(kSystemClockTicksPerMicrosecond*1e3);
+        
+        tDIO.writePWMConfig_Period((short) (PWM.kDefaultPwmPeriod/loopTime + .5));
 
-        tDIO.writePWMConfig_Period((short) PWM.kDefaultPwmPeriod);
-        tDIO.writePWMConfig_MinHigh((short) PWM.kDefaultMinPwmHigh);
+        //Calculate the minimum time for the PWM signal to be high by using the number of steps down from center
+        tDIO.writePWMConfig_MinHigh((short) ((PWM.kDefaultPwmCenter-PWM.kDefaultPwmStepsDown*loopTime)/loopTime + .5));
+
 
         // Ensure that PWM output values are set to OFF
         for (int pwm_index = 1; pwm_index <= kPwmChannels; pwm_index++) {
@@ -440,5 +446,14 @@ public class DigitalModule extends Module {
      */
     public I2C getI2C(final int address) {
         return new I2C(this, address);
+    }
+    
+    /**
+     * Get the loop timing of the Digital Module
+     *
+     * @return The number of clock ticks per DIO loop
+     */
+    public int getLoopTiming() {
+        return tDIO.readLoopTiming();
     }
 }

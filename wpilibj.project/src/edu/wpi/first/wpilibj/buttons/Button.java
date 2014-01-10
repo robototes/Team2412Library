@@ -51,4 +51,20 @@ public abstract class Button extends Trigger {
     public void whenReleased(final Command command) {
         whenInactive(command);
     }
+    
+    /**
+     * Toggles the command whenever the button is pressed (on then off then on)
+     * @param command 
+     */
+    public void toggleWhenPressed(final Command command) {
+        toggleWhenActive(command);
+    }
+    
+    /**
+     * Cancel the command when the button is pressed
+     * @param command 
+     */
+    public void cancelWhenPressed(final Command command) {
+        cancelWhenActive(command);
+    }
 }

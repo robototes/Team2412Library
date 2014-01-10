@@ -26,7 +26,7 @@ public class I2C extends SensorBase {
     /**
      * Constructor.
      *
-     * @param module The Digital Module to which the device is conneted.
+     * @param module The Digital Module to which the device is connected.
      * @param deviceAddress The address of the device on the I2C bus.
      */
     public I2C(DigitalModule module, int deviceAddress) {
@@ -35,7 +35,7 @@ public class I2C extends SensorBase {
         }
         m_module = module;
         m_deviceAddress = deviceAddress;
-        m_compatibilityMode = false;
+        m_compatibilityMode = true;
 
         UsageReporting.report(UsageReporting.kResourceType_I2C, deviceAddress, module.getModuleNumber()-1);
     }
@@ -54,7 +54,7 @@ public class I2C extends SensorBase {
      * @param dataToSend Buffer of data to send as part of the transaction.
      * @param sendSize Number of bytes to send as part of the transaction. [0..6]
      * @param dataReceived Buffer to read data into.
-     * @param receiveSize Number of byted to read from the device. [0..7]
+     * @param receiveSize Number of bytes to read from the device. [0..7]
      * @return Transfer Aborted... false for success, true for aborted.
      */
     public synchronized boolean transaction(byte[] dataToSend, int sendSize, byte[] dataReceived, int receiveSize) {
@@ -65,10 +65,10 @@ public class I2C extends SensorBase {
         long dataHigh = 0;
         int i;
         for (i = 0; i < sendSize && i < 4; i++) {
-            data |= (long) dataToSend[i] << (8 * i);
+            data |= ((long) dataToSend[i] & 0x000000FF) << (8 * i);
         }
         for (; i < sendSize; i++) {
-            dataHigh |= (long) dataToSend[i] << (8 * (i - 4));
+            dataHigh |= ((long) dataToSend[i] & 0x000000FF) << (8 * (i - 4));
         }
 
         boolean aborted = true;
@@ -177,6 +177,7 @@ public class I2C extends SensorBase {
      *
      * Enables bitwise clock skewing detection.  This will reduce the I2C interface speed,
      * but will allow you to communicate with devices that skew the clock at abnormal times.
+     * Compatability mode is enabled by default.
      *
      * @param enable Enable compatability mode for this sensor or not.
      */

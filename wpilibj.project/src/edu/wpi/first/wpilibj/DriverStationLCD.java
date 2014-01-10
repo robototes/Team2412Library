@@ -33,7 +33,11 @@ public class DriverStationLCD extends SensorBase implements IInputOutput{
      * Maximum line length for Driver Station display
      */
     public static final int kLineLength = 21;
-
+    /**
+     * Total number of lines available
+     */
+    public static final int kNumLines = 6;
+    
     /**
      * The line number on the Driver Station LCD
      */
@@ -172,5 +176,19 @@ public class DriverStationLCD extends SensorBase implements IInputOutput{
                 m_textBuffer[i + start + line.value * kLineLength + 2] = (byte) text.charAt(i);
             }
         }
+    }
+    
+    /**
+     * Clear User Messages box on DS Operations Tab
+     * 
+     * This method will clear all text currently displayed in the message box
+     */
+    public void clear() {
+        synchronized (this) {
+            for (int i=0; i < kLineLength*kNumLines; i++) {
+                m_textBuffer[i+2] = ' ';
+            }
+        }
+        updateLCD();
     }
 }

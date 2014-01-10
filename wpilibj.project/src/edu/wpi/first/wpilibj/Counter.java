@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.fpga.tCounter;
 import edu.wpi.first.wpilibj.livewindow.LiveWindowSendable;
 import edu.wpi.first.wpilibj.tables.ITable;
 import edu.wpi.first.wpilibj.util.AllocationException;
+import edu.wpi.first.wpilibj.util.BoundaryException;
 import edu.wpi.first.wpilibj.util.CheckedAllocationException;
 
 /**
@@ -20,7 +21,7 @@ import edu.wpi.first.wpilibj.util.CheckedAllocationException;
  * of counts, the period of the most recent cycle, and detect when the signal being counted
  * has stopped by supplying a maximum cycle time.
  */
-public class Counter extends SensorBase implements CounterBase, LiveWindowSendable {
+public class Counter extends SensorBase implements CounterBase, LiveWindowSendable, PIDSource {
 
     /**
      * Mode determines how and what the counter counts
@@ -63,6 +64,8 @@ public class Counter extends SensorBase implements CounterBase, LiveWindowSendab
     private tCounter m_counter;				///< The FPGA counter object.
     private int m_index;					///< The index of this counter.
     private static Resource counters = new Resource(tCounter.kNumSystems);
+    private PIDSourceParameter m_pidSource;
+    private double m_distancePerPulse;		// distance of travel for each tick
 
     private void initCounter(final Mode mode) {
         m_allocatedUpSource = false;
@@ -280,7 +283,7 @@ public class Counter extends SensorBase implements CounterBase, LiveWindowSendab
 
     /**
      * Set the down counting source to be a digital input slot and channel.
-     * @param slot the location of the digital moduel to use
+     * @param slot the location of the digital module to use
      * @param channel the digital port to count
      */
     public void setDownSource(int slot, int channel) {
@@ -410,6 +413,15 @@ public class Counter extends SensorBase implements CounterBase, LiveWindowSendab
     public int get() {
         return m_counter.readOutput_Value();
     }
+    
+    /**
+     * Read the current scaled counter value.
+     * Read the value at this instant, scaled by the distance per pulse (defaults to 1).
+     * @return 
+     */
+    public double getDistance() {
+        return m_counter.readOutput_Value() * m_distancePerPulse;
+    }
 
     /**
      * Reset the Counter to zero.
@@ -493,7 +505,7 @@ public class Counter extends SensorBase implements CounterBase, LiveWindowSendab
         }
     }
 
-    /*
+    /**
      * Get the Period of the most recent count.
      * Returns the time interval of the most recent count. This can be used for velocity calculations
      * to determine shaft speed.
@@ -508,9 +520,73 @@ public class Counter extends SensorBase implements CounterBase, LiveWindowSendab
         }
         return period / 1.0e6;
     }
+    
+    /**
+     * Get the current rate of the Counter.
+     * Read the current rate of the counter accounting for the distance per pulse value. 
+     * The default value for distance per pulse (1) yields units of pulses per second.
+     * @return The rate in units/sec
+     */
+    public double getRate() {
+        return m_distancePerPulse / getPeriod();
+    }
+    
+    /**
+     * Set the Samples to Average which specifies the number of samples of the timer to 
+     * average when calculating the period. Perform averaging to account for 
+     * mechanical imperfections or as oversampling to increase resolution.
+     * @param samplesToAverage The number of samples to average from 1 to 127.
+     */
+    public void setSamplesToAverage (int samplesToAverage) {
+       BoundaryException.assertWithinBounds(samplesToAverage, 1, 127);
+       m_counter.writeTimerConfig_AverageSize(samplesToAverage);
+    }
+    
+    /**
+     * Get the Samples to Average which specifies the number of samples of the timer to 
+     * average when calculating the period. Perform averaging to account for 
+     * mechanical imperfections or as oversampling to increase resolution.
+     * @return SamplesToAverage The number of samples being averaged (from 1 to 127)
+     */
+    public int getSamplesToAverage()
+    {
+        return m_counter.readTimerConfig_AverageSize();
+    }
+    
+    /**
+     * Set the distance per pulse for this counter.
+     * This sets the multiplier used to determine the distance driven based on the count value
+     * from the encoder. Set this value based on the Pulses per Revolution and factor in any 
+     * gearing reductions. This distance can be in any units you like, linear or angular.
+     *
+     * @param distancePerPulse The scale factor that will be used to convert pulses to useful units.
+     */
+    public void setDistancePerPulse(double distancePerPulse) {
+        m_distancePerPulse = distancePerPulse;
+    }
+    
+    /**
+     * Set which parameter of the encoder you are using as a process control variable.
+     * The counter class supports the rate and distance parameters.
+     * @param pidSource An enum to select the parameter.
+     */
+    public void setPIDSourceParameter(PIDSourceParameter pidSource) {
+	BoundaryException.assertWithinBounds(pidSource.value, 0, 1);
+        m_pidSource = pidSource;
+    }
 	
+    public double pidGet() {
+        switch (m_pidSource.value) {
+        case PIDSourceParameter.kDistance_val:
+            return getDistance();
+        case PIDSourceParameter.kRate_val:
+            return getRate();
+        default:
+            return 0.0;
+        }
+    }
 	
-    /*
+    /**
      * Live Window code, only does anything if live window is activated.
      */
     public String getSmartDashboardType(){

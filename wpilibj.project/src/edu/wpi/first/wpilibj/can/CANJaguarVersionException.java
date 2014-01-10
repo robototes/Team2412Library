@@ -14,7 +14,7 @@ package edu.wpi.first.wpilibj.can;
  */
 public class CANJaguarVersionException extends RuntimeException {
 
-    public static final int kMinLegalFIRSTFirmwareVersion = 92;
+    public static final int kMinLegalFIRSTFirmwareVersion = 101;
     // 3330 was the first shipping RDK firmware version for the Jaguar
     public static final int kMinRDKFirmwareVersion = 3330;
 

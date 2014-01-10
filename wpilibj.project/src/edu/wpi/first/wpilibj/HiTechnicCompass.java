@@ -24,7 +24,7 @@ import edu.wpi.first.wpilibj.tables.ITable;
  *   http://www.hitechnic.com/index.html?lang=en-us&target=d17.html
  *
  */
-public class HiTechnicCompass extends SensorBase implements ISensor, LiveWindowSendable {
+public class HiTechnicCompass extends SensorBase implements ISensor, LiveWindowSendable, PIDSource {
 
     /**
      * An exception dealing with connecting to and communicating with the
@@ -95,6 +95,10 @@ public class HiTechnicCompass extends SensorBase implements ISensor, LiveWindowS
         m_i2c.read(kHeadingRegister, (byte) heading.length, heading);
 
         return ((int) heading[0] + (int) heading[1] * (int) (1 << 8));
+    }
+    
+    public double pidGet() {
+        return getAngle();
     }
 
     /*

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
 
     This is a sample netbeans project file for a Sun Spot Application project.
@@ -29,25 +29,20 @@
             </folders>
             <ide-actions>
                 <action name="build">
-                    <script>nbproject/nbjdk.xml</script>
                     <target>dist</target>
                 </action>
                 <action name="clean">
-                    <script>nbproject/nbjdk.xml</script>
                     <target>clean</target>
                 </action>
                 <action name="run">
-                    <script>nbproject/nbjdk.xml</script>
                     <target>deploy-tests</target>
                     <target>run</target>
                 </action>
                 <action name="rebuild">
-                    <script>nbproject/nbjdk.xml</script>
                     <target>clean</target>
                     <target>dist</target>
                 </action>
                 <action name="debug">
-                    <script>nbproject/nbjdk.xml</script>
                     <target>deploy</target>
                     <target>debug-run</target>
                 </action>
@@ -87,7 +82,7 @@
                 <package-root>src</package-root>
                 <package-root>tests</package-root>
                 <classpath mode="boot">${sunspot.home}\lib\squawk.jar</classpath>
-                <classpath mode="compile">${sunspot.home}\lib\networktables-crio.jar;${sunspot.home}\lib\microemu-midp-2.0.2.jar</classpath>
+                <classpath mode="compile">${sunspot.home}\lib\networktables-crio.jar;${sunspot.home}\lib\wpilibj.project\dist\lib\wpilibj.jar</classpath>
                 <built-to>build</built-to>
                 <source-level>1.3</source-level>
             </compilation-unit>

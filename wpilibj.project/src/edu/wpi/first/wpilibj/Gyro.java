@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.livewindow.LiveWindowSendable;
 import edu.wpi.first.wpilibj.parsing.ISensor;
 import edu.wpi.first.wpilibj.tables.ITable;
+import edu.wpi.first.wpilibj.util.BoundaryException;
 
 /**
  * Use a rate gyro to return the robots heading relative to a starting position.
@@ -30,8 +31,10 @@ public class Gyro extends SensorBase implements PIDSource, ISensor, LiveWindowSe
     AnalogChannel m_analog;
     double m_voltsPerDegreePerSecond;
     double m_offset;
+    int m_center;
     boolean m_channelAllocated;
     AccumulatorResult result;
+    private PIDSourceParameter m_pidSource;
 
     /**
      * Initialize the gyro.
@@ -59,14 +62,16 @@ public class Gyro extends SensorBase implements PIDSource, ISensor, LiveWindowSe
 
         m_analog.getAccumulatorOutput(result);
 
-        int center = (int) ((double)result.value / (double)result.count + .5);
+        m_center = (int) ((double)result.value / (double)result.count + .5);
 
-        m_offset = ((double)result.value / (double)result.count) - (double)center;
+        m_offset = ((double)result.value / (double)result.count) - (double)m_center;
 
-        m_analog.setAccumulatorCenter(center);
+        m_analog.setAccumulatorCenter(m_center);
 
         m_analog.setAccumulatorDeadband(0); ///< TODO: compute / parameterize this
         m_analog.resetAccumulator();
+        
+        setPIDSourceParameter(PIDSourceParameter.kAngle);
 
         UsageReporting.report(UsageReporting.kResourceType_Gyro, m_analog.getChannel(), m_analog.getModuleNumber()-1);
         LiveWindow.addSensor("Gyro", m_analog.getModuleNumber(), m_analog.getChannel(), this);
@@ -159,6 +164,22 @@ public class Gyro extends SensorBase implements PIDSource, ISensor, LiveWindowSe
             return scaledValue;
         }
     }
+    
+    /**
+     * Return the rate of rotation of the gyro
+     * 
+     * The rate is based on the most recent reading of the gyro analog value
+     * 
+     * @return the current rate in degrees per second
+     */
+    public double getRate() {      
+        if(m_analog == null) {
+            return 0.0;
+        } else {
+            return (m_analog.getAverageValue() - ((double)m_center + m_offset)) * 1e-9 * m_analog.getLSBWeight() 
+                    / ((1 << m_analog.getOversampleBits()) * m_voltsPerDegreePerSecond);
+        }
+    }
 
     /**
      * Set the gyro type based on the sensitivity.
@@ -170,13 +191,30 @@ public class Gyro extends SensorBase implements PIDSource, ISensor, LiveWindowSe
     public void setSensitivity(double voltsPerDegreePerSecond) {
         m_voltsPerDegreePerSecond = voltsPerDegreePerSecond;
     }
+    
+    /**
+     * Set which parameter of the encoder you are using as a process control variable.
+     * The Gyro class supports the rate and angle parameters
+     * @param pidSource An enum to select the parameter.
+     */
+    public void setPIDSourceParameter(PIDSourceParameter pidSource) {
+	BoundaryException.assertWithinBounds(pidSource.value, 1, 2);
+        m_pidSource = pidSource;
+    }
 
     /**
      * Get the angle of the gyro for use with PIDControllers
      * @return the current angle according to the gyro
      */
     public double pidGet() {
-        return getAngle();
+        switch (m_pidSource.value) {
+        case PIDSourceParameter.kRate_val:
+            return getRate();
+        case PIDSourceParameter.kAngle_val:
+            return getAngle();
+        default:
+            return 0.0;
+        }
     }
 
     /*

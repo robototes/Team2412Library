@@ -210,7 +210,6 @@ public class DigitalOutput extends DigitalSource implements IInputOutput, LiveWi
     public void startLiveWindowMode() {
         m_table_listener = new ITableListener() {
             public void valueChanged(ITable itable, String key, Object value, boolean bln) {
-                System.out.println(key+": "+value);
                 set(((Boolean) value).booleanValue());
             }
         };

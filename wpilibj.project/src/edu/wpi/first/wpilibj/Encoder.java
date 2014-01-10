@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindowSendable;
 import edu.wpi.first.wpilibj.parsing.ISensor;
 import edu.wpi.first.wpilibj.tables.ITable;
 import edu.wpi.first.wpilibj.util.AllocationException;
+import edu.wpi.first.wpilibj.util.BoundaryException;
 import edu.wpi.first.wpilibj.util.CheckedAllocationException;
 
 /**
@@ -25,18 +26,6 @@ import edu.wpi.first.wpilibj.util.CheckedAllocationException;
  * that are out of phase with each other to allow the FPGA to do direction sensing.
  */
 public class Encoder extends SensorBase implements CounterBase, PIDSource, ISensor, LiveWindowSendable {
-
-    public static class PIDSourceParameter {
-        public final int value;
-        static final int kDistance_val = 0;
-        static final int kRate_val = 1;
-        public static final PIDSourceParameter kDistance = new PIDSourceParameter(kDistance_val);
-        public static final PIDSourceParameter kRate = new PIDSourceParameter(kRate_val);
-
-        private PIDSourceParameter(int value) {
-            this.value = value;
-        }
-    }
 
     static Resource quadEncoders = new Resource(tEncoder.kNumSystems);
     /**
@@ -643,13 +632,51 @@ public class Encoder extends SensorBase implements CounterBase, PIDSource, ISens
             m_encoder.writeConfig_Reverse(reverseDirection);
         }
     }
+    
+    /**
+     * Set the Samples to Average which specifies the number of samples of the timer to 
+     * average when calculating the period. Perform averaging to account for 
+     * mechanical imperfections or as oversampling to increase resolution.
+     * @param samplesToAverage The number of samples to average from 1 to 127.
+     */
+    public void setSamplesToAverage(int samplesToAverage)
+    {
+        BoundaryException.assertWithinBounds(samplesToAverage, 1, 127);
+        switch (m_encodingType.value) {
+            case EncodingType.k4X_val:
+                m_encoder.writeTimerConfig_AverageSize(samplesToAverage);
+                break;
+            case EncodingType.k1X_val:
+            case EncodingType.k2X_val:
+                m_counter.setSamplesToAverage(samplesToAverage);
+        }
+    }
+    
+    /**
+     * Get the Samples to Average which specifies the number of samples of the timer to 
+     * average when calculating the period. Perform averaging to account for 
+     * mechanical imperfections or as oversampling to increase resolution.
+     * @return SamplesToAverage The number of samples being averaged (from 1 to 127)
+     */
+    public int getSamplesToAverage()
+    {
+        switch (m_encodingType.value) {
+            case EncodingType.k4X_val:
+                return m_encoder.readTimerConfig_AverageSize();
+            case EncodingType.k1X_val:
+            case EncodingType.k2X_val:
+                return m_counter.getSamplesToAverage();
+        }
+        return 1;
+    }
 
     /**
      * Set which parameter of the encoder you are using as a process control variable.
-     *
+     * The encoder class supports the rate and distance parameters.
      * @param pidSource An enum to select the parameter.
      */
     public void setPIDSourceParameter(PIDSourceParameter pidSource) {
+        BoundaryException.assertWithinBounds(pidSource.value, 0, 1);
 	m_pidSource = pidSource;
     }
 

@@ -531,6 +531,25 @@ public class NIVision {
     //IMAQ_FUNC int IMAQ_STDCALL imaqMultiplyConstant(Image* dest, const Image* source, PixelValue value);
     //IMAQ_FUNC int IMAQ_STDCALL imaqSubtract(Image* dest, const Image* sourceA, const Image* sourceB);
     //IMAQ_FUNC int IMAQ_STDCALL imaqSubtractConstant(Image* dest, const Image* source, PixelValue value);
+	
+	private static final BlockingFunction imaqSubtractFn = NativeLibrary.getDefaultInstance().getBlockingFunction("imaqSubtraact");
+    static { imaqSubtractFn.setTaskExecutor(taskExecutor); }
+	
+	
+	/**
+	 * Subtract two images
+	 * @param destination the destination image.
+	 * @param sourceA the first source image.
+	 * @param sourceB the second source image.
+	 * @throws NIVisionException 
+	 */
+	public static void subract(Pointer destination, Pointer sourceA, Pointer sourceB) throws NIVisionException {
+		assertCleanStatus(imaqSubtractFn.call3(
+			destination.address().toUWord().toPrimitive(), 
+			sourceA.address().toUWord().toPrimitive(), 
+			sourceB.address().toUWord().toPrimitive()
+		));
+	}
 
     //============================================================================
     //  Spatial Filters functions

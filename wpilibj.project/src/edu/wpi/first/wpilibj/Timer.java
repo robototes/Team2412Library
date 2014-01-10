@@ -84,7 +84,7 @@ public class Timer implements IUtility{
      * the current system clock the start time stored in the timer class. If the clock
      * is not running, then return the time when it was last stopped.
      *
-     * @return Current time value for this timer in microseconds (uSeconds)
+     * @return Current time value for this timer in seconds
      */
     public synchronized double get() {
         if (m_running) {
@@ -121,7 +121,7 @@ public class Timer implements IUtility{
      */
     public synchronized void stop() {
         final double temp = get();
-        m_accumulatedTime += temp;
+        m_accumulatedTime = temp;
         m_running = false;
     }
 }

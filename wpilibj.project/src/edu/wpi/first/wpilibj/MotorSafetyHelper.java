@@ -82,10 +82,8 @@ public class MotorSafetyHelper {
      * updated again.
      */
     public void check() {
-        if (!m_enabled) {
-            return;
-        }
-        if (DriverStation.getInstance().isDisabled())
+        DriverStation ds = DriverStation.getInstance();
+        if (!m_enabled || ds.isDisabled() || ds.isTest())
             return;
         if (m_stopTime < Timer.getFPGATimestamp()) {
             System.err.println(m_safeObject.getDescription() + "... Output not updated often enough.");

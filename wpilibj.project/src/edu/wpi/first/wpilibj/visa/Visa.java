@@ -44,7 +44,8 @@ public class Visa {
     public static final int VI_SUCCESS_MAX_CNT = (0x3FFF0006);
     public static final int VI_ATTR_TMO_VALUE = (0x3FFF001A);
     public static final int VI_ATTR_WR_BUF_OPER_MODE = (0x3FFF002D);
-    public static final int VI_WRITE_BUF = 2;
+    public static final short VI_READ_BUF = 1;
+    public static final short VI_WRITE_BUF = 2;
 
     private static final Function viOpenDefaultRMFn = NativeLibrary.getDefaultInstance().getFunction("viOpenDefaultRM");
     public synchronized static int viOpenDefaultRM() throws VisaException {
@@ -74,6 +75,12 @@ public class Visa {
         status = viSetAttributeFn.call3(vi, attrName, attrValue?1:0);
         assertCleanStatus("viSetAttribute");
     }
+    
+    private static final Function viSetBufFn = NativeLibrary.getDefaultInstance().getFunction("viSetBuf");
+    public static void viSetBuf(int vi, short buffer, int size) throws VisaException {
+        status = viSetBufFn.call3(vi, buffer, size);
+        assertCleanStatus("viSetBuf");
+    }
 
     private static final Function viCloseFn = NativeLibrary.getDefaultInstance().getFunction("viClose");
     public static void viClose(int vi) {
@@ -87,6 +94,7 @@ public class Visa {
         return pValue.getValue();
     }
 
+    //Doesn't work correctly. Correct parameters are vi, a format string, and a list of args
     private static final Function viVPrintfFn = NativeLibrary.getDefaultInstance().getFunction("viVPrintf");
     public static void viVPrintf(int vi, String write) throws VisaException {
         Pointer string = new Pointer(write.length());
@@ -99,7 +107,8 @@ public class Visa {
     private static final Function viBufReadFn = NativeLibrary.getDefaultInstance().getFunction("viBufRead");
     public static byte[] viBufRead(int vi, int cnt) throws VisaException {
         Pointer bytes = new Pointer(cnt);
-        status = viBufReadFn.call2(vi, bytes);
+        Pointer retCnt = new Pointer(4);
+        status = viBufReadFn.call4(vi, bytes, cnt, retCnt);
         switch (status) {
             case VI_SUCCESS_TERM_CHAR:
             case VI_SUCCESS_MAX_CNT:
@@ -126,7 +135,7 @@ public class Visa {
     }
 
     private static final Function viFlushFn = NativeLibrary.getDefaultInstance().getFunction("viFlush");
-    public static void viFlush(int vi, int mask) throws VisaException {
+    public static void viFlush(int vi, short mask) throws VisaException {
         status = viFlushFn.call2(vi, mask);
         assertCleanStatus("viFlush");
     }

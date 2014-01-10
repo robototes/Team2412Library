@@ -4,7 +4,6 @@
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
-
 package edu.wpi.first.wpilibj;
 
 import com.sun.squawk.microedition.io.FileConnection;
@@ -20,40 +19,58 @@ import java.util.Vector;
 import javax.microedition.io.Connector;
 
 /**
- * The preferences class provides a relatively simple way to save important values to
- * the cRIO to access the next time the cRIO is booted.
+ * The preferences class provides a relatively simple way to save important
+ * values to the cRIO to access the next time the cRIO is booted.
  *
- * <p>This class loads and saves from a file
- * inside the cRIO.  The user can not access the file directly, but may modify values at specific
- * fields which will then be saved to the file when {@link Preferences#save() save()} is called.</p>
+ * <p>This class loads and saves from a file inside the cRIO. The user can not
+ * access the file directly, but may modify values at specific fields which will
+ * then be saved to the file when {@link Preferences#save() save()} is
+ * called.</p>
  *
  * <p>This class is thread safe.</p>
  *
- * <p>This will also interact with {@link NetworkTable} by creating a table called "Preferences" with all the
- * key-value pairs.  To save using {@link NetworkTable}, simply set the boolean at position ~S A V E~ to true.
- * Also, if the value of any variable is " in the {@link NetworkTable}, then that represents non-existence in the
- * {@link Preferences} table</p>
+ * <p>This will also interact with {@link NetworkTable} by creating a table
+ * called "Preferences" with all the key-value pairs. To save using
+ * {@link NetworkTable}, simply set the boolean at position ~S A V E~ to true.
+ * Also, if the value of any variable is " in the {@link NetworkTable}, then
+ * that represents non-existence in the {@link Preferences} table</p>
+ *
  * @author Joe Grinstead
  */
 public class Preferences {
 
-    /** The Preferences table name */
+    /**
+     * The Preferences table name
+     */
     private static final String TABLE_NAME = "Preferences";
-    /** The value of the save field */
+    /**
+     * The value of the save field
+     */
     private static final String SAVE_FIELD = "~S A V E~";
-    /** The file to save to */
+    /**
+     * The file to save to
+     */
     private static final String FILE_NAME = "file:///wpilib-preferences.ini";
-    /** The characters to put between a field and value */
+    /**
+     * The characters to put between a field and value
+     */
     private static final byte[] VALUE_PREFIX = {'=', '\"'};
-    /** The characters to put after the value */
+    /**
+     * The characters to put after the value
+     */
     private static final byte[] VALUE_SUFFIX = {'\"', '\n'};
-    /** The newline character */
+    /**
+     * The newline character
+     */
     private static final byte[] NEW_LINE = {'\n'};
-    /** The singleton instance */
+    /**
+     * The singleton instance
+     */
     private static Preferences instance;
 
     /**
      * Returns the preferences instance.
+     *
      * @return the preferences instance
      */
     public synchronized static Preferences getInstance() {
@@ -62,22 +79,36 @@ public class Preferences {
         }
         return instance;
     }
-    /** The semaphore for beginning reads and writes to the file */
+    /**
+     * The semaphore for beginning reads and writes to the file
+     */
     private final Object fileLock = new Object();
-    /** The semaphore for reading from the table */
+    /**
+     * The semaphore for reading from the table
+     */
     private final Object lock = new Object();
-    /** The actual values (String->String) */
+    /**
+     * The actual values (String->String)
+     */
     private Hashtable values;
-    /** The keys in the order they were read from the file */
+    /**
+     * The keys in the order they were read from the file
+     */
     private Vector keys;
-    /** The comments that were in the file sorted by which key they appeared over (String->Comment) */
+    /**
+     * The comments that were in the file sorted by which key they appeared over
+     * (String->Comment)
+     */
     private Hashtable comments;
-    /** The comment at the end of the file */
+    /**
+     * The comment at the end of the file
+     */
     private Comment endComment;
 
     /**
-     * Creates a preference class that will automatically read the file in a different thread.
-     * Any call to its methods will be blocked until the thread is finished reading.
+     * Creates a preference class that will automatically read the file in a
+     * different thread. Any call to its methods will be blocked until the
+     * thread is finished reading.
      */
     private Preferences() {
         values = new Hashtable();
@@ -87,7 +118,6 @@ public class Preferences {
         // for it to know that the reading thread has started
         synchronized (fileLock) {
             new Thread() {
-
                 public void run() {
                     read();
                 }
@@ -98,36 +128,9 @@ public class Preferences {
             }
         }
 
-        NetworkTable.getTable(TABLE_NAME).putBoolean(SAVE_FIELD, false);
-        // TODO: Verify that this works even though it changes with subtables.
-        //       Should work since preferences shouldn't have subtables.
-        NetworkTable.getTable(TABLE_NAME).addTableListener(new ITableListener() {
-            public void valueChanged(ITable source, String key, Object value, boolean isNew) {
-                if (key.equals(SAVE_FIELD)) {
-                    if (((Boolean) value).booleanValue()) {
-                        save();
-                    }
-                } else {
-                    synchronized (lock) {
-                        if (!ImproperPreferenceKeyException.isAcceptable(key) || value.toString().indexOf('"') != -1) {
-                            if(values.contains(key) || keys.contains(key)){
-                                values.remove(key);
-                                keys.removeElement(key);
-                                NetworkTable.getTable(TABLE_NAME).putString(key, "\"");
-                            }
-                        } else {
-                            if (values.put(key, value.toString()) == null) {
-                                keys.addElement(key);
-                            }
-                        }
-                    }
-                }
-            }
-        });
-
         UsageReporting.report(UsageReporting.kResourceType_Preferences, 0);
     }
-    
+
     /**
      * @return a vector of the keys
      */
@@ -136,14 +139,14 @@ public class Preferences {
             return keys;
         }
     }
-    
-    
 
     /**
      * Puts the given value into the given key position
+     *
      * @param key the key
      * @param value the value
-     * @throws ImproperPreferenceKeyException if the key contains an illegal character
+     * @throws ImproperPreferenceKeyException if the key contains an illegal
+     * character
      */
     private void put(String key, String value) {
         synchronized (lock) {
@@ -161,17 +164,19 @@ public class Preferences {
     /**
      * Puts the given string into the preferences table.
      *
-     * <p>The value may not have quotation marks, nor may the key
-     * have any whitespace nor an equals sign</p>
+     * <p>The value may not have quotation marks, nor may the key have any
+     * whitespace nor an equals sign</p>
      *
-     * <p>This will <b>NOT</b> save the value to memory between power cycles,
-     * to do that you must call {@link Preferences#save() save()} (which must be used with care).
-     * at some point after calling this.</p>
+     * <p>This will <b>NOT</b> save the value to memory between power cycles, to
+     * do that you must call {@link Preferences#save() save()} (which must be
+     * used with care). at some point after calling this.</p>
+     *
      * @param key the key
      * @param value the value
      * @throws NullPointerException if value is null
      * @throws IllegalArgumentException if value contains a quotation mark
-     * @throws ImproperPreferenceKeyException if the key contains any whitespace or an equals sign
+     * @throws ImproperPreferenceKeyException if the key contains any whitespace
+     * or an equals sign
      */
     public void putString(String key, String value) {
         if (value == null) {
@@ -188,12 +193,14 @@ public class Preferences {
      *
      * <p>The key may not have any whitespace nor an equals sign</p>
      *
-     * <p>This will <b>NOT</b> save the value to memory between power cycles,
-     * to do that you must call {@link Preferences#save() save()} (which must be used with care)
-     * at some point after calling this.</p>
+     * <p>This will <b>NOT</b> save the value to memory between power cycles, to
+     * do that you must call {@link Preferences#save() save()} (which must be
+     * used with care) at some point after calling this.</p>
+     *
      * @param key the key
      * @param value the value
-     * @throws ImproperPreferenceKeyException if the key contains any whitespace or an equals sign
+     * @throws ImproperPreferenceKeyException if the key contains any whitespace
+     * or an equals sign
      */
     public void putInt(String key, int value) {
         put(key, String.valueOf(value));
@@ -204,12 +211,14 @@ public class Preferences {
      *
      * <p>The key may not have any whitespace nor an equals sign</p>
      *
-     * <p>This will <b>NOT</b> save the value to memory between power cycles,
-     * to do that you must call {@link Preferences#save() save()} (which must be used with care)
-     * at some point after calling this.</p>
+     * <p>This will <b>NOT</b> save the value to memory between power cycles, to
+     * do that you must call {@link Preferences#save() save()} (which must be
+     * used with care) at some point after calling this.</p>
+     *
      * @param key the key
      * @param value the value
-     * @throws ImproperPreferenceKeyException if the key contains any whitespace or an equals sign
+     * @throws ImproperPreferenceKeyException if the key contains any whitespace
+     * or an equals sign
      */
     public void putDouble(String key, double value) {
         put(key, String.valueOf(value));
@@ -220,12 +229,14 @@ public class Preferences {
      *
      * <p>The key may not have any whitespace nor an equals sign</p>
      *
-     * <p>This will <b>NOT</b> save the value to memory between power cycles,
-     * to do that you must call {@link Preferences#save() save()} (which must be used with care)
-     * at some point after calling this.</p>
+     * <p>This will <b>NOT</b> save the value to memory between power cycles, to
+     * do that you must call {@link Preferences#save() save()} (which must be
+     * used with care) at some point after calling this.</p>
+     *
      * @param key the key
      * @param value the value
-     * @throws ImproperPreferenceKeyException if the key contains any whitespace or an equals sign
+     * @throws ImproperPreferenceKeyException if the key contains any whitespace
+     * or an equals sign
      */
     public void putFloat(String key, float value) {
         put(key, String.valueOf(value));
@@ -236,12 +247,14 @@ public class Preferences {
      *
      * <p>The key may not have any whitespace nor an equals sign</p>
      *
-     * <p>This will <b>NOT</b> save the value to memory between power cycles,
-     * to do that you must call {@link Preferences#save() save()} (which must be used with care)
-     * at some point after calling this.</p>
+     * <p>This will <b>NOT</b> save the value to memory between power cycles, to
+     * do that you must call {@link Preferences#save() save()} (which must be
+     * used with care) at some point after calling this.</p>
+     *
      * @param key the key
      * @param value the value
-     * @throws ImproperPreferenceKeyException if the key contains any whitespace or an equals sign
+     * @throws ImproperPreferenceKeyException if the key contains any whitespace
+     * or an equals sign
      */
     public void putBoolean(String key, boolean value) {
         put(key, String.valueOf(value));
@@ -252,12 +265,14 @@ public class Preferences {
      *
      * <p>The key may not have any whitespace nor an equals sign</p>
      *
-     * <p>This will <b>NOT</b> save the value to memory between power cycles,
-     * to do that you must call {@link Preferences#save() save()} (which must be used with care)
-     * at some point after calling this.</p>
+     * <p>This will <b>NOT</b> save the value to memory between power cycles, to
+     * do that you must call {@link Preferences#save() save()} (which must be
+     * used with care) at some point after calling this.</p>
+     *
      * @param key the key
      * @param value the value
-     * @throws ImproperPreferenceKeyException if the key contains any whitespace or an equals sign
+     * @throws ImproperPreferenceKeyException if the key contains any whitespace
+     * or an equals sign
      */
     public void putLong(String key, long value) {
         put(key, String.valueOf(value));
@@ -265,6 +280,7 @@ public class Preferences {
 
     /**
      * Returns the value at the given key.
+     *
      * @param key the key
      * @return the value (or null if none exists)
      * @throws NullPointerException if the key is null
@@ -280,16 +296,18 @@ public class Preferences {
 
     /**
      * Returns whether or not there is a key with the given name.
+     *
      * @param key the key
      * @return if there is a value at the given key
      * @throws NullPointerException if key is null
      */
     public boolean containsKey(String key) {
-            return get(key) != null;
+        return get(key) != null;
     }
 
     /**
      * Remove a preference
+     *
      * @param key the key
      * @throws NullPointerException if key is null
      */
@@ -304,141 +322,152 @@ public class Preferences {
     }
 
     /**
-     * Returns the string at the given key.  If this table does not have a value
+     * Returns the string at the given key. If this table does not have a value
      * for that position, then the given backup value will be returned.
+     *
      * @param key the key
      * @param backup the value to return if none exists in the table
      * @return either the value in the table, or the backup
      * @throws NullPointerException if the key is null
      */
     public String getString(String key, String backup) {
-            String value = get(key);
-            return value == null ? backup : value;
+        String value = get(key);
+        return value == null ? backup : value;
     }
 
     /**
-     * Returns the int at the given key.  If this table does not have a value
-     * for that position, then the given backup value will be returned.
+     * Returns the int at the given key. If this table does not have a value for
+     * that position, then the given backup value will be returned.
+     *
      * @param key the key
      * @param backup the value to return if none exists in the table
      * @return either the value in the table, or the backup
-     * @throws IncompatibleTypeException if the value in the table can not be converted to an int
+     * @throws IncompatibleTypeException if the value in the table can not be
+     * converted to an int
      */
     public int getInt(String key, int backup) {
-            String value = get(key);
-            if (value == null) {
-                return backup;
-            } else {
-                try {
-                    return Integer.parseInt(value);
-                } catch (NumberFormatException e) {
-                    throw new IncompatibleTypeException(value, "int");
-                }
+        String value = get(key);
+        if (value == null) {
+            return backup;
+        } else {
+            try {
+                return Integer.parseInt(value);
+            } catch (NumberFormatException e) {
+                throw new IncompatibleTypeException(value, "int");
             }
+        }
     }
 
     /**
-     * Returns the double at the given key.  If this table does not have a value
+     * Returns the double at the given key. If this table does not have a value
      * for that position, then the given backup value will be returned.
+     *
      * @param key the key
      * @param backup the value to return if none exists in the table
      * @return either the value in the table, or the backup
-     * @throws IncompatibleTypeException if the value in the table can not be converted to an double
+     * @throws IncompatibleTypeException if the value in the table can not be
+     * converted to an double
      */
     public double getDouble(String key, double backup) {
-            String value = get(key);
-            if (value == null) {
-                return backup;
-            } else {
-                try {
-                    return Double.parseDouble(value);
-                } catch (NumberFormatException e) {
-                    throw new IncompatibleTypeException(value, "double");
-                }
+        String value = get(key);
+        if (value == null) {
+            return backup;
+        } else {
+            try {
+                return Double.parseDouble(value);
+            } catch (NumberFormatException e) {
+                throw new IncompatibleTypeException(value, "double");
             }
+        }
     }
 
     /**
-     * Returns the boolean at the given key.  If this table does not have a value
+     * Returns the boolean at the given key. If this table does not have a value
      * for that position, then the given backup value will be returned.
+     *
      * @param key the key
      * @param backup the value to return if none exists in the table
      * @return either the value in the table, or the backup
-     * @throws IncompatibleTypeException if the value in the table can not be converted to a boolean
+     * @throws IncompatibleTypeException if the value in the table can not be
+     * converted to a boolean
      */
     public boolean getBoolean(String key, boolean backup) {
-            String value = get(key);
-            if (value == null) {
-                return backup;
+        String value = get(key);
+        if (value == null) {
+            return backup;
+        } else {
+            if (value.equalsIgnoreCase("true")) {
+                return true;
+            } else if (value.equalsIgnoreCase("false")) {
+                return false;
             } else {
-                if (value.equalsIgnoreCase("true")) {
-                    return true;
-                } else if (value.equalsIgnoreCase("false")) {
-                    return false;
-                } else {
-                    throw new IncompatibleTypeException(value, "boolean");
-                }
+                throw new IncompatibleTypeException(value, "boolean");
             }
+        }
     }
 
     /**
-     * Returns the float at the given key.  If this table does not have a value
+     * Returns the float at the given key. If this table does not have a value
      * for that position, then the given backup value will be returned.
+     *
      * @param key the key
      * @param backup the value to return if none exists in the table
      * @return either the value in the table, or the backup
-     * @throws IncompatibleTypeException if the value in the table can not be converted to a float
+     * @throws IncompatibleTypeException if the value in the table can not be
+     * converted to a float
      */
     public float getFloat(String key, float backup) {
-            String value = get(key);
-            if (value == null) {
-                return backup;
-            } else {
-                try {
-                    return Float.parseFloat(value);
-                } catch (NumberFormatException e) {
-                    throw new IncompatibleTypeException(value, "float");
-                }
+        String value = get(key);
+        if (value == null) {
+            return backup;
+        } else {
+            try {
+                return Float.parseFloat(value);
+            } catch (NumberFormatException e) {
+                throw new IncompatibleTypeException(value, "float");
             }
+        }
     }
 
     /**
-     * Returns the long at the given key.  If this table does not have a value
+     * Returns the long at the given key. If this table does not have a value
      * for that position, then the given backup value will be returned.
+     *
      * @param key the key
      * @param backup the value to return if none exists in the table
      * @return either the value in the table, or the backup
-     * @throws IncompatibleTypeException if the value in the table can not be converted to a long
+     * @throws IncompatibleTypeException if the value in the table can not be
+     * converted to a long
      */
     public long getLong(String key, long backup) {
-            String value = get(key);
-            if (value == null) {
-                put(key, String.valueOf(backup));
-                return backup;
-            } else {
-                try {
-                    return Long.parseLong(value);
-                } catch (NumberFormatException e) {
-                    throw new IncompatibleTypeException(value, "long");
-                }
+        String value = get(key);
+        if (value == null) {
+            put(key, String.valueOf(backup));
+            return backup;
+        } else {
+            try {
+                return Long.parseLong(value);
+            } catch (NumberFormatException e) {
+                throw new IncompatibleTypeException(value, "long");
             }
+        }
     }
 
     /**
      * Saves the preferences to a file on the cRIO.
      *
-     * <p>This should <b>NOT</b> be called often.
-     * Too many writes can damage the cRIO's flash memory.
-     * While it is ok to save once or twice a match, this should never
-     * be called every run of {@link IterativeRobot#teleopPeriodic()}.</p>
+     * <p>This should <b>NOT</b> be called often. Too many writes can damage the
+     * cRIO's flash memory. While it is ok to save once or twice a match, this
+     * should never be called every run of
+     * {@link IterativeRobot#teleopPeriodic()}.</p>
      *
-     * <p>The actual writing of the file is done in a separate thread.
-     * However, any call to a get or put method will wait until the table is fully saved before continuing.</p>
+     * <p>The actual writing of the file is done in a separate thread. However,
+     * any call to a get or put method will wait until the table is fully saved
+     * before continuing.</p>
      */
     public void save() {
         synchronized (fileLock) {
             new Thread() {
-
                 public void run() {
                     write();
                 }
@@ -451,8 +480,8 @@ public class Preferences {
     }
 
     /**
-     * Internal method that actually writes the table to a file.
-     * This is called in its own thread when {@link Preferences#save() save()} is called.
+     * Internal method that actually writes the table to a file. This is called
+     * in its own thread when {@link Preferences#save() save()} is called.
      */
     private void write() {
         synchronized (lock) {
@@ -503,9 +532,8 @@ public class Preferences {
     }
 
     /**
-     * The internal method to read from a file.
-     * This will be called in its own thread when the preferences singleton is
-     * first created.
+     * The internal method to read from a file. This will be called in its own
+     * thread when the preferences singleton is first created.
      */
     private void read() {
         class EndOfStreamException extends Exception {
@@ -643,21 +671,51 @@ public class Preferences {
                 endComment = comment;
             }
         }
+
+        NetworkTable.getTable(TABLE_NAME).putBoolean(SAVE_FIELD, false);
+        // TODO: Verify that this works even though it changes with subtables.
+        //       Should work since preferences shouldn't have subtables.
+        NetworkTable.getTable(TABLE_NAME).addTableListener(new ITableListener() {
+            public void valueChanged(ITable source, String key, Object value, boolean isNew) {
+                if (key.equals(SAVE_FIELD)) {
+                    if (((Boolean) value).booleanValue()) {
+                        save();
+                    }
+                } else {
+                    synchronized (lock) {
+                        if (!ImproperPreferenceKeyException.isAcceptable(key) || value.toString().indexOf('"') != -1) {
+                            if (values.contains(key) || keys.contains(key)) {
+                                values.remove(key);
+                                keys.removeElement(key);
+                                NetworkTable.getTable(TABLE_NAME).putString(key, "\"");
+                            }
+                        } else {
+                            if (values.put(key, value.toString()) == null) {
+                                keys.addElement(key);
+                            }
+                        }
+                    }
+                }
+            }
+        });
     }
 
     /**
-     * A class representing some comment lines in the ini file.
-     * This is used so that if a programmer ever directly
-     * modifies the ini file, then his/her comments
-     * will still be there after {@link Preferences#save() save()} is called.
+     * A class representing some comment lines in the ini file. This is used so
+     * that if a programmer ever directly modifies the ini file, then his/her
+     * comments will still be there after {@link Preferences#save() save()} is
+     * called.
      */
     private static class Comment {
 
-        /** A vector of byte arrays.  Each array represents a line to write */
+        /**
+         * A vector of byte arrays. Each array represents a line to write
+         */
         private Vector bytes = new Vector();
 
         /**
          * Appends the given bytes to the comment.
+         *
          * @param bytes the bytes to add
          */
         private void addBytes(byte[] bytes) {
@@ -666,6 +724,7 @@ public class Preferences {
 
         /**
          * Writes this comment to the given stream
+         *
          * @param stream the stream to write to
          * @throws IOException if the stream has a problem
          */
@@ -677,12 +736,14 @@ public class Preferences {
     }
 
     /**
-     * This exception is thrown if the a value requested cannot be converted to the requested type.
+     * This exception is thrown if the a value requested cannot be converted to
+     * the requested type.
      */
     public static class IncompatibleTypeException extends RuntimeException {
 
         /**
          * Creates an exception with a description based on the input
+         *
          * @param value the value that can not be converted
          * @param type the type that the value can not be converted to
          */
@@ -692,13 +753,16 @@ public class Preferences {
     }
 
     /**
-     * Should be thrown if a string can not be used as a key in the preferences file.
-     * This happens if the string contains a new line, a space, a tab, or an equals sign.
+     * Should be thrown if a string can not be used as a key in the preferences
+     * file. This happens if the string contains a new line, a space, a tab, or
+     * an equals sign.
      */
     public static class ImproperPreferenceKeyException extends RuntimeException {
 
         /**
-         * Instantiates an exception with a descriptive message based on the input.
+         * Instantiates an exception with a descriptive message based on the
+         * input.
+         *
          * @param value the illegal key
          * @param letter the specific character that made it illegal
          */
@@ -708,8 +772,10 @@ public class Preferences {
         }
 
         /**
-         * Tests if the given string is ok to use as a key in the preference table.  If not,
-         * then a {@link ImproperPreferenceKeyException} will be thrown.
+         * Tests if the given string is ok to use as a key in the preference
+         * table. If not, then a {@link ImproperPreferenceKeyException} will be
+         * thrown.
+         *
          * @param value the value to test
          */
         public static void confirmString(String value) {
@@ -727,7 +793,9 @@ public class Preferences {
         }
 
         /**
-         * Returns whether or not the given string is ok to use in the preference table.
+         * Returns whether or not the given string is ok to use in the
+         * preference table.
+         *
          * @param value
          * @return
          */

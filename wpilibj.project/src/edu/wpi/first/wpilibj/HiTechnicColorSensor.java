@@ -10,6 +10,7 @@ package edu.wpi.first.wpilibj;
 import edu.wpi.first.wpilibj.communication.UsageReporting;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.livewindow.LiveWindowSendable;
+import edu.wpi.first.wpilibj.networktables2.type.NumberArray;
 import edu.wpi.first.wpilibj.parsing.ISensor;
 import edu.wpi.first.wpilibj.tables.ITable;
 
@@ -362,18 +363,27 @@ public class HiTechnicColorSensor extends SensorBase implements ISensor, LiveWin
         return m_table;
     }
     
+	private NumberArray rgbArray = new NumberArray();
     /**
      * {@inheritDoc}
      */
     public void updateTable() {
         if (m_table != null) {
+			if(rgbArray.size() == 0) {
+				rgbArray.setSize(3);
+			}
             if(m_mode == tColorSensorMode.kActive.value)
             {
                 m_table.putNumber("Color", getColor());
+				rgbArray.set(0, getRed());
+				rgbArray.set(1, getGreen());
+				rgbArray.set(2, getBlue());
+				m_table.putValue("RGB", rgbArray);
             }
             else
             {
                 m_table.putNumber("Color", 99);
+				m_table.putValue("RGB", rgbArray);
             }
         }
     }
