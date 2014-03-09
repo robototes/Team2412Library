@@ -748,7 +748,7 @@ public class RobotDrive implements MotorSafety, IUtility {
     private void setupMotorSafety() {
         m_safetyHelper = new MotorSafetyHelper(this);
         m_safetyHelper.setExpiration(kDefaultExpirationTime);
-        m_safetyHelper.setSafetyEnabled(true);
+        m_safetyHelper.setSafetyEnabled(false);
     }
 
     protected int getNumMotors()
