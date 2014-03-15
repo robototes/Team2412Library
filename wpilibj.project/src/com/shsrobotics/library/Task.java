@@ -10,7 +10,9 @@ public abstract class Task {
 
 	private boolean forceStop = false;
 	private int timeout = -1; // can't ever timeout.
-	private final Timer timer = new Timer();
+	private Timer timer = new Timer();
+	private RunningAverage averageLoopTime = new RunningAverage();
+	private double lastTime = 0.0;
 	
 	public final Task stop() {
 		forceStop = true;
@@ -59,7 +61,17 @@ public abstract class Task {
 	 * @return {@code true} if timed out.
 	 */
 	private boolean isTimedOut() {
-		return timer.get() > timeout;
+		if (timeout == -1) {
+			return false;
+		}
+		
+		int difference = (int) Math.abs(timer.get() - timeout);
+		
+		if (difference < averageLoopTime.get()) { // so we don't overshoot accidentaly.
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	
@@ -70,9 +82,26 @@ public abstract class Task {
 		
 			do {
 				execute();
+				// update averages
+				averageLoopTime.update(timer.get() - lastTime);
+				lastTime = timer.get();
 			} while (!isFinished() && !forceStop && !isTimedOut());
 
 			end();
+		}
+	}
+	
+	private class RunningAverage {
+		private double average = 0;
+		private int count = 0;
+		
+		public double update(double x) {
+			average += (x - average) / ++count;
+			return get();
+		};
+		
+		public double get() {
+			return average;
 		}
 	}
 }

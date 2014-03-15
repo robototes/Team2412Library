@@ -3,13 +3,13 @@ package com.shsrobotics.library;
 import edu.wpi.first.wpilibj.Joystick;
 
 /**
- * Joystick button, de-bounced.
+ * Joystick button, debounced.
  * @author Cory McCartan
  */
 public class JoystickButton extends Button {
 
-	private final Joystick joystick;
-	private final int button;
+	private Joystick joystick;
+	private int button;
 	
 	public JoystickButton(Joystick joystick, int button) {
 		this.joystick = joystick;
