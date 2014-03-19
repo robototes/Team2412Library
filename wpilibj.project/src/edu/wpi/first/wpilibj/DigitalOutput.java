@@ -7,6 +7,7 @@
 
 package edu.wpi.first.wpilibj;
 
+import com.shsrobotics.library.link.Output;
 import edu.wpi.first.wpilibj.communication.UsageReporting;
 import edu.wpi.first.wpilibj.fpga.tDIO;
 import edu.wpi.first.wpilibj.livewindow.LiveWindowSendable;
@@ -20,7 +21,7 @@ import edu.wpi.first.wpilibj.tables.ITableListener;
  * that are implemented elsewhere will automatically
  * allocate digital inputs and outputs as required.
  */
-public class DigitalOutput extends DigitalSource implements IInputOutput, LiveWindowSendable {
+public class DigitalOutput extends DigitalSource implements IInputOutput, LiveWindowSendable, Output {
 
     private int m_channel;
     private int m_pwmGenerator;
@@ -223,4 +224,8 @@ public class DigitalOutput extends DigitalSource implements IInputOutput, LiveWi
         // TODO: Broken, should only remove the listener from "Value" only.
         m_table.removeTableListener(m_table_listener);
     }
+
+	public void set(double value) {
+		this.set(value > 0);
+	}
 }

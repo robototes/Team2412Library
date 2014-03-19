@@ -7,6 +7,7 @@
 
 package edu.wpi.first.wpilibj;
 
+import com.shsrobotics.library.link.Output;
 import edu.wpi.first.wpilibj.communication.UsageReporting;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.livewindow.LiveWindowSendable;
@@ -21,7 +22,7 @@ import edu.wpi.first.wpilibj.util.CheckedAllocationException;
  * The Solenoid class is typically used for pneumatics solenoids, but could be used
  * for any device within the current spec of the 9472 module.
  */
-public class Solenoid extends SolenoidBase implements LiveWindowSendable {
+public class Solenoid extends SolenoidBase implements LiveWindowSendable, Output {
 
     private int m_channel; ///< The channel on the module to control.
 
@@ -150,4 +151,8 @@ public class Solenoid extends SolenoidBase implements LiveWindowSendable {
         // TODO: Broken, should only remove the listener from "Value" only.
         m_table.removeTableListener(m_table_listener);
     }
+
+	public void set(double value) {
+		this.set(value > 0);
+	}
 }

@@ -7,6 +7,7 @@
 
 package edu.wpi.first.wpilibj;
 
+import com.shsrobotics.library.link.Output;
 import edu.wpi.first.wpilibj.communication.UsageReporting;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.parsing.IDeviceController;
@@ -14,7 +15,7 @@ import edu.wpi.first.wpilibj.parsing.IDeviceController;
 /**
  * VEX Robotics Victor Speed Controller
  */
-public class Victor extends SafePWM implements SpeedController, IDeviceController {
+public class Victor extends SafePWM implements SpeedController, IDeviceController, Output {
 
     /**
      * Common initialization code called by all constructors.
@@ -108,4 +109,8 @@ public class Victor extends SafePWM implements SpeedController, IDeviceControlle
     public void pidWrite(double output) {
         set(output);
     }
+
+	public void set(boolean value) {
+		setSpeed(value ? 1.0 : 0.0);
+	}
 }

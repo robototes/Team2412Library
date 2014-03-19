@@ -7,6 +7,7 @@
 
 package edu.wpi.first.wpilibj;
 
+import com.shsrobotics.library.link.Output;
 import edu.wpi.first.wpilibj.communication.UsageReporting;
 import edu.wpi.first.wpilibj.fpga.tDIO;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -26,7 +27,15 @@ import edu.wpi.first.wpilibj.util.CheckedAllocationException;
  * variable speed.  It also allows the two channels (forward and reverse) to be used independently
  * for something that does not care about voltage polarity (like a solenoid).
  */
-public class Relay extends SensorBase implements IDeviceController, LiveWindowSendable {
+public class Relay extends SensorBase implements IDeviceController, LiveWindowSendable, Output {
+
+	public void set(boolean value) {
+		this.set(value ? Value.kForward : Value.kReverse);
+	}
+
+	public void set(double value) {
+		this.set((value > 0) ? Value.kForward : ((value < 0) ? Value.kReverse : Value.kOff));
+	}
 
     /**
      * This class represents errors in trying to set relay values contradictory

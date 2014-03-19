@@ -6,6 +6,7 @@
 /*----------------------------------------------------------------------------*/
 package edu.wpi.first.wpilibj;
 
+import com.shsrobotics.library.link.Output;
 import edu.wpi.first.wpilibj.communication.UsageReporting;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.livewindow.LiveWindowSendable;
@@ -21,7 +22,15 @@ import edu.wpi.first.wpilibj.util.CheckedAllocationException;
  * The DoubleSolenoid class is typically used for pneumatics solenoids that
  * have two positions controlled by two separate channels.
  */
-public class DoubleSolenoid extends SolenoidBase implements LiveWindowSendable {
+public class DoubleSolenoid extends SolenoidBase implements LiveWindowSendable, Output {
+
+	public void set(boolean value) {
+		this.set(value ? Value.kForward : Value.kReverse);
+	}
+
+	public void set(double value) {
+		this.set(value > 0 ? Value.kForward : value < 0 ? Value.kReverse : Value.kOff);
+	}
 
     /**
      * Possible values for a DoubleSolenoid
