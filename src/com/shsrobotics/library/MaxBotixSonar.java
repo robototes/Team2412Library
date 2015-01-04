@@ -4,29 +4,25 @@
  */
 package com.shsrobotics.library;
 
-import edu.wpi.first.wpilibj.AnalogChannel;
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.SensorBase;
-import edu.wpi.first.wpilibj.parsing.ISensor;
 
 /**
  *
  * @author RoboTotes Team 2412
  */
-public class MaxBotixSonar extends SensorBase implements ISensor {
+public class MaxBotixSonar extends SensorBase {
 	
 	// supplied voltage = 4.978 ; 4.91 (b)
 	
 	public static final double DEFAULT_SCALING_FACTOR = 4.978 / 512;
 	private double mVperInch = DEFAULT_SCALING_FACTOR;
-	private AnalogChannel channel;
+	private AnalogInput channel;
 	
 	public MaxBotixSonar(int channel) {
-		this.channel = new AnalogChannel(channel);
+		this.channel = new AnalogInput(channel);
 	}
-	
-	public MaxBotixSonar(int slot, int channel) {
-		this.channel = new AnalogChannel(slot, channel);
-	}
+
 	
 	public double getDistanceInFeet() {
 		double measuredVoltage = channel.getVoltage();

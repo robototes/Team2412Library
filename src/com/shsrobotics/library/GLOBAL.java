@@ -2,7 +2,6 @@ package com.shsrobotics.library;
 
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.DriverStationLCD;
 import edu.wpi.first.wpilibj.Relay;
 
 /**
@@ -15,6 +14,7 @@ public interface GLOBAL {
 	
 	/**	 USB ports.	 */
 	public static final int 
+		USB_0 = 0,
 		USB_1 = 1,
 		USB_2 = 2,
 		USB_3 = 3,
@@ -22,6 +22,7 @@ public interface GLOBAL {
 	
 	/**	 PWM Ports.	 */
 	public static final int
+		PWM_0 = 0,
 		PWM_1 = 1,
 		PWM_2 = 2,
 		PWM_3 = 3,
@@ -35,6 +36,7 @@ public interface GLOBAL {
 	
 	/**	 Analog inputs.	 */
 	public static final int
+		ANALOG_0 = 0,
 		ANALOG_1 = 1,
 		ANALOG_2 = 2,
 		ANALOG_3 = 3,
@@ -68,6 +70,7 @@ public interface GLOBAL {
 	
 	/**	 Digital inputs/outputs.	 */
 	public static final int
+		DIGITAL_IO_0 = 0,
 		DIGITAL_IO_1 = 1,
 		DIGITAL_IO_2 = 2,
 		DIGITAL_IO_3 = 3,
@@ -96,25 +99,4 @@ public interface GLOBAL {
 	public static final DoubleSolenoid.Value
 		EXTENDED = DoubleSolenoid.Value.kForward,
 		RETRACTED = DoubleSolenoid.Value.kReverse;
-	
-	public static DriverStationLCD screen = DriverStationLCD.getInstance();
-	
-	/**  Shorthand variables for lines and columns of Driver Station Screen. */
-	public class Screen {
-		/**	 Driver Station screen lines.	*/
-		public static final DriverStationLCD.Line
-			line1 = DriverStationLCD.Line.kUser2,
-			line2 = DriverStationLCD.Line.kUser3,
-			line3 = DriverStationLCD.Line.kUser4,
-			line4 = DriverStationLCD.Line.kUser5,
-			line5 = DriverStationLCD.Line.kUser6,
-			line6 = DriverStationLCD.Line.kMain6;
-
-		/**	 Driver Station tabs.	*/
-		public static final int
-			tab1 = 1,
-			tab2 = 5,
-			tab3 = 9,
-			tab4 = 13;
-	}
 }

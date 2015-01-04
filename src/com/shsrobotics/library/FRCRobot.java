@@ -23,7 +23,7 @@ public class FRCRobot extends IterativeRobot {
 		
 		System.out.println("	==== STARTING INITIALIZATION PROCEDURES ====");
 			Timer.delay(0.15);
-		System.out.println("		" + alliance.name.toUpperCase() + " ALLIANCE, POSITION " + location);
+		System.out.println("		" + alliance.toString().toUpperCase() + " ALLIANCE, POSITION " + location);
 			Timer.delay(0.2);
 		System.out.println("		RUNNING SYSTEM CHECKS");
 			Timer.delay(0.1);
