@@ -1,0 +1,7 @@
+<?xml version="1.0" ?>
+<!-- Configuration of the Ant build system to generate a Jar file --> 
+<project name="Team2412Library" default="CreateJar">
+  <target name="CreateJar" description="Create Jar file">
+        <jar jarfile="team2412library.jar" basedir="." includes="*.class" />
+  </target>
+</project>
