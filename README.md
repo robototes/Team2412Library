@@ -1,4 +1,4 @@
-CustomWPILIBJ
+TEAM 2412 CODE LIBRARY
 =============
 Team 2412's custom WPI java library for the FIRST Robotics Competition.
 
