@@ -34,6 +34,18 @@ public interface GLOBAL {
 		PWM_9 = 9,
 		PWM_10 = 10;
 	
+	/** CAN Device Numbers. */
+	public static final int
+		CAN_0 = 0,
+		CAN_1 = 1,
+		CAN_2 = 2,
+		CAN_3 = 3,
+		CAN_4 = 4,
+		CAN_5 = 5,
+		CAN_6 = 6,
+		CAN_7 = 7,
+		CAN_8 = 8;
+	
 	/**	 Analog inputs.	 */
 	public static final int
 		ANALOG_0 = 0,
