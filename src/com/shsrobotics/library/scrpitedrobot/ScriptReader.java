@@ -6,14 +6,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-
 import edu.wpi.first.wpilibj.Relay;
-<<<<<<< HEAD
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-=======
 import java.util.StringTokenizer;
->>>>>>> aeb8109e41f03fbb24137cf02bc83a91b8abb402
 
 /**
  * regex used:
