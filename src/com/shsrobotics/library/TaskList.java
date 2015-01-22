@@ -13,6 +13,9 @@ public abstract class TaskList extends Thread {
 		runType = RunType.SEQUENTIAL;
 	}
 
+	/**
+	 * starts the task list.
+	 */
 	@Override
 	public synchronized void start() {
 		if ( !runOnce ) {
@@ -92,7 +95,7 @@ public abstract class TaskList extends Thread {
 		runType = RunType.PARALLEL;
 	}
 	
-	public abstract void runTasks();
+	protected abstract void runTasks();
 	
 	
 	private enum RunType {
