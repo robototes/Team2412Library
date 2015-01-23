@@ -27,9 +27,13 @@ public abstract class TaskList extends Thread {
 		}
 	}
 	
+	/**
+	 * Do not call this.  It should get invoked through a call to start()
+	 * If you do call it there is a change that you will lock your thread waiting for the tasks in it to finish.  
+	 */
 	public final void run() {
 		if ( runOnce ) {
-			return;
+			return;		// guards against people calling run() incorrectly, but only before start() is called.   
 		}
 		runTasks();
 	}

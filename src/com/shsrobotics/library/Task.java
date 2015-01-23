@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.Timer;
  * Easy threading for FIRST robots.
  * @author Team 2412 <first.robototes.com, github.com/robototes>
  */
-public abstract class Task {
+public abstract class Task {	// TODO boolean done = false, gets set to true after end() is called in thread.
 
 	private boolean forceStop = false;
 	private int timeout = -1; // can't ever timeout.
@@ -24,6 +24,9 @@ public abstract class Task {
 		return this;
 	}
 	
+	public final boolean running() {
+		return forceStop;
+	}
 	
 	/**
 	 * Called once before task runs.
@@ -67,11 +70,11 @@ public abstract class Task {
 		public final void run() {
 			timer.start();
 			initialize();
-		
+			
 			do {
 				execute();
 			} while (!isFinished() && !forceStop && !isTimedOut());
-
+			
 			end();
 		}
 	}
