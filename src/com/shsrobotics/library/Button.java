@@ -1,8 +1,10 @@
 package com.shsrobotics.library;
 
+import com.shsrobotics.library.util.functions.VoidCallback;
+
 /**
  * Button, with de-bouncing included.
- * @author Cory McCartan
+ * @author Cory McCartan.  Revised by Max Orth
  */
 public abstract class Button {
 	private boolean lastHeld = false;
@@ -36,27 +38,24 @@ public abstract class Button {
 		return false;
 	}
 	
+	public abstract void doFunc();
+	
 	/**
-	 * Start a task when pressed.
+	 * Start something when pressed.
 	 * @param task the task to start.
 	 */
-	public void whenPressed(Task task) {
-		if (pressed()) {
-			task.start();
+	public void whenPressed() {
+		if ( pressed() ) {
+			doFunc();
 		}
 	}
 	
 	/**
-	 * Start a task when pressed, stop it when released.
+	 * What to do when stopped.
 	 * @param task the task to start.
 	 */
-	public void whileHeld(Task task) {
-		if (pressed()) {
-			task.start();
-		}
-		if (!held()) {
-			task.end();
-			task.stop();
-		}
+	public void whenReleased() {
+		if ( lastHeld && !get() )
+			doFunc();
 	}
 }
