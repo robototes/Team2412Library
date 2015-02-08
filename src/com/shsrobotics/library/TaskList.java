@@ -44,7 +44,7 @@ public abstract class TaskList extends Thread {
 	 * @return The wrapped task.  If in sequential mode, this is probably useless.
 	 * @throws InterruptedException if the task is started on sequential mode and this thread is interrupted.  
 	 */
-	protected Task begin(final Task t) throws InterruptedException {	// TODO put waitForThreads at beginning of begin() (for sequential)
+	protected Task begin(final Task t) throws InterruptedException {
 		t.stop();
 		Task w;
 		w = new Task() {
@@ -78,13 +78,32 @@ public abstract class TaskList extends Thread {
 		return w;
 	}
 	
+	protected Thread begin(Runnable r) throws InterruptedException {
+		RunThread run = new RunThread(r);
+		Thread t;
+		synchronized(lock) {
+			if ( runType == RunType.PARALLEL )
+				pTaskCount++;
+			t = new Thread(run);
+			if ( runType == RunType.SEQUENTIAL)
+				lock.wait();
+			t.start();
+		}
+		return t;
+	}
+	
+	protected Thread begin(Thread t) throws InterruptedException {
+		return begin(t::run);
+	}
+	
+	
 	/**
 	 * Waits for all threads executed since the last call to wait to finish.
 	 * @throws InterruptedException
 	 */
 	protected void waitForThreads() throws InterruptedException {
-		while ( pTaskCount != 0 ) {
-			synchronized(lock) {
+		synchronized(lock) {
+			while ( pTaskCount != 0 ) {
 				lock.wait();
 				pTaskCount--;
 			}
@@ -104,6 +123,20 @@ public abstract class TaskList extends Thread {
 	
 	private enum RunType {
 		PARALLEL, SEQUENTIAL;
+	}
+	
+	private class RunThread implements Runnable {
+		public RunThread(Runnable run) {
+			r = run;
+		}
+		Runnable r;
+		public void run() {
+			r.run();
+			synchronized(lock) {
+				pTaskCount--;
+				lock.notifyAll();
+			}
+		}
 	}
 	
 }

@@ -2,7 +2,7 @@ package com.shsrobotics.library;
 
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 
-public class CorrectedBuildInAccelerometer extends BuiltInAccelerometer {
+public class CorrectedBuiltInAccelerometer extends BuiltInAccelerometer {
 	
 	public static final double BUILT_IN_2015_X_CORRECTION = -.0256351;
 	public static final double BUILT_IN_2015_Y_CORRECTION = .012205527;
@@ -11,7 +11,7 @@ public class CorrectedBuildInAccelerometer extends BuiltInAccelerometer {
 	private double ycorrection = 0;
 	
 	public static BuiltInAccelerometer getCorrected2015() {
-		CorrectedBuildInAccelerometer cba = new CorrectedBuildInAccelerometer();
+		CorrectedBuiltInAccelerometer cba = new CorrectedBuiltInAccelerometer();
 		cba.setDriftCorrection(BUILT_IN_2015_X_CORRECTION, BUILT_IN_2015_Y_CORRECTION);
 		return cba;
 	}

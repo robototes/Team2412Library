@@ -6,10 +6,12 @@
 
 package com.shsrobotics.library.fieldpositioning;
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.util.Iterator;
 
 /**
- *
+ * 16 connectivity does not yet work correctly.
  * @author Max
  */
 public class Field implements Iterable<FieldNode>{
@@ -132,6 +134,37 @@ public class Field implements Iterable<FieldNode>{
         return n;
     }
     
+    public Field(double x, double y, boolean[][] shape, int connectivity) {
+    	yDiv = shape[0].length;
+    	xDiv = shape.length;
+    	this.y = y;
+    	this.x = x;
+    	
+
+        int con;
+        if ( connectivity == Field.CONNECTIVITY_16 )
+            con = 16;
+        else if ( connectivity == Field.CONNECTIVITY_4 )
+            con = 4;
+        else    // defaults to 8
+            con = 8;
+        
+        // calculate chunks between nodes
+        double sx = x / xDiv;
+        double sxd2 = sx/2;
+        double sy = y / yDiv;
+        double syd2 = sy/2;
+        
+        nodes = new FieldNode[xDiv][yDiv];
+        for ( int i = 0; i < nodes.length; i++ ) {
+            for ( int j = 0; j < nodes[i].length; i++ ) {
+            	if ( shape[i][j] )
+            		nodes[i][j] = new FieldNode(sx * i + sxd2, sy * j + syd2, con);
+            }
+        }
+        unify(connectivity);
+    }
+    
     /**
      * Creates a 2d graph that represents the field.
      * Note that this may take a while to initialize since this creates the backing graph.
@@ -157,6 +190,7 @@ public class Field implements Iterable<FieldNode>{
         this.xDiv = dx;
         this.yDiv = dy;
         
+        // calculate chunks between nodes
         double sx = x / xDiv;
         double sxd2 = sx/2;
         double sy = y / yDiv;
@@ -171,7 +205,59 @@ public class Field implements Iterable<FieldNode>{
         unify(connectivity);
     }
     
+    private static int[] getPixelData(BufferedImage img, int x, int y) {
+    	int argb = img.getRGB(x, y);
+
+    	int rgb[] = new int[] {
+    	    (argb >> 16) & 0xff, //red
+    	    (argb >>  8) & 0xff, //green
+    	    (argb      ) & 0xff  //blue
+    	};
+    	return rgb;
+    }
     
+    /**
+     * Creates a field from one difined from pixel data, black as a node and white as null.
+     * @param x
+     * @param y
+     * @param img
+     */
+    public Field( double x, double y, BufferedImage img, int connectivity) {
+    	this.y = y;
+    	this.x = x;
+    	xDiv = img.getWidth();
+    	yDiv = img.getHeight();
+
+        int con;
+        if ( connectivity == Field.CONNECTIVITY_16 )
+            con = 16;
+        else if ( connectivity == Field.CONNECTIVITY_4 )
+            con = 4;
+        else    // defaults to 8
+            con = 8;
+        
+    	
+    	this.nodes = new FieldNode[xDiv][yDiv];
+    	
+        double sx = x / xDiv;
+        double sxd2 = sx/2;
+        double sy = y / yDiv;
+        double syd2 = sy/2;
+    	
+    	for (int i = 0; i < xDiv; i++ ) {
+    		for ( int j = 1; j <= yDiv; j++ ) {
+    			int[] pix = getPixelData(img, i, j);
+    			if ( pix[0] < 128 && pix[1] > 128 && pix[2] > 128 )
+    				nodes[i][yDiv-j] = new FieldNode(sx * i + sxd2, sy * j + syd2, con);	// TODO verify y is reversed in Image
+    		}
+    	}
+    	
+    }
+    
+    /**
+     * Creates connections between nodes. Has null checks for null nodes.
+     * @param connectivity
+     */
     private void unify(int connectivity) {
         int nm1 = nodes.length-1;
         switch(connectivity) {
