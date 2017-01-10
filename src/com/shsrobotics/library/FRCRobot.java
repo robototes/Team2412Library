@@ -30,7 +30,7 @@ public class FRCRobot extends IterativeRobot {
 		System.out.println("			VOLTAGE: " + voltage);
 			Timer.delay(0.05);
 		if (ds.isFMSAttached()) {
-			System.out.println("			FMS ATTAHCED");
+			System.out.println("			FMS ATTACHED");
 			Timer.delay(0.2);
 		}
 		
