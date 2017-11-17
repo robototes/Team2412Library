@@ -5,6 +5,8 @@
  */
 package com.shsrobotics.library;
 
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
+
 /**
  * Maze path finding with direction output. Just call {@code getPath(table)}.
  * Assumes the start is in top-left corner (0,0) and end is in bottom left corner (7,7).
@@ -16,8 +18,10 @@ package com.shsrobotics.library;
 public class Pathmaker {
     
     public static void _main(String[] args) {
+    	final String tablename = "datatable";
+    	NetworkTable table = NetworkTable.getTable(tablename);
         //*
-        int[] res = getPath();
+        int[] res = getPath(table);
         for ( int i = 0; i < res.length; i++ ) {
             System.out.println(res[i]);
         }
@@ -60,25 +64,25 @@ public class Pathmaker {
     
     /*/
     private static int[] getPath(NetworkTable table) {
-        int[] h = new int[8];
-        int[] v = new int[8];
-        h[0] = table.getInteger("h0");
-        h[1] = table.getInteger("h1");
-        h[2] = table.getInteger("h2");
-        h[3] = table.getInteger("h3");
-        h[4] = table.getInteger("h4");
-        h[5] = table.getInteger("h5");
-        h[6] = table.getInteger("h6");
-        h[7] = table.getInteger("h7");
+        double[] h = new double[8];
+        double[] v = new double[8];
+        h[0] = table.getNumber("h0", 0);
+        h[1] = table.getNumber("h1", 0);
+        h[2] = table.getNumber("h2", 0);
+        h[3] = table.getNumber("h3", 0);
+        h[4] = table.getNumber("h4", 0);
+        h[5] = table.getNumber("h5", 0);
+        h[6] = table.getNumber("h6", 0);
+        h[7] = table.getNumber("h7", 0);
         
-        v[0] = table.getInteger("v0");
-        v[1] = table.getInteger("v1");
-        v[2] = table.getInteger("v2");
-        v[3] = table.getInteger("v3");
-        v[4] = table.getInteger("v4");
-        v[5] = table.getInteger("v5");
-        v[6] = table.getInteger("v6");
-        v[7] = table.getInteger("v7");
+        v[0] = table.getNumber("v0", 0);
+        v[1] = table.getNumber("v1", 0);
+        v[2] = table.getNumber("v2", 0);
+        v[3] = table.getNumber("v3", 0);
+        v[4] = table.getNumber("v4", 0);
+        v[5] = table.getNumber("v5", 0);
+        v[6] = table.getNumber("v6", 0);
+        v[7] = table.getNumber("v7", 0);
         return getPath(null,null);
     }
     //*/

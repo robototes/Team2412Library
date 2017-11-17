@@ -2,6 +2,7 @@ package com.shsrobotics.library;
 
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
+import edu.wpi.first.wpilibj.PIDSourceType;
 
 /**
  * Class to hold get and set methods for PID controller.
@@ -26,6 +27,18 @@ public abstract class PIDHardware {
 	public class Source implements PIDSource {
 		public double pidGet() {
 			return read();
+		}
+
+		@Override
+		public void setPIDSourceType(PIDSourceType pidSource) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public PIDSourceType getPIDSourceType() {
+			// TODO Auto-generated method stub
+			return null;
 		}
 	}
 
